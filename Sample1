@@ -50,7 +50,7 @@ private RecordUtils recordUtils;
 private RecordService recordService;
 
 @Autowired
-public RecordFactory recordFactory;
+private RecordFactory recordFactory;
 
 @Autowired
 private CompositeRecordService compositeRecordService;
@@ -70,7 +70,7 @@ private ObjectService objectService;
 @Autowired
 private PermAndPrefUtil permAndPrefUtil;
 
-public boolean HasLinkedEntityRecordsForRecordId(String recordId,String linkedEntity,String lookupFieldOnLinkedEntity) throws ServiceException {
+public boolean HasLinkedEntityRecordsForRecordId(String recordId,String linkedEntity,String lookupFieldOnLinkedEntity) throws ServiceException{
 
     if (recordId == null || recordId.isEmpty()) {
                     return false;
@@ -110,7 +110,7 @@ public List<StandardEntitiesBase> GetWhiteListedEntities() throws ServiceExcepti
          return entities;
       }
 
-      public Map<String,String> GetDciParentEntitiesWithKeyPrefix() throws ServiceException {
+      public Map<String,String> GetDciParentEntitiesWithKeyPrefix() throws ServiceException{
               Map<String, String> dciParentEntitiesMap = new HashMap<String, String>();
                       try {
                           Field field = recordUtils.getEntityField(StandardEntitiesD.DocumentChecklistItem.getApiName(),DocumentChecklistItemStandardFields.ParentRecordId.getName());
@@ -125,7 +125,7 @@ public List<StandardEntitiesBase> GetWhiteListedEntities() throws ServiceExcepti
                   }
 
             @Override
-            public String RemoveFileFromDocumentChecklistItem(String documentChecklistItemId) throws ServiceException {
+            public String RemoveFileFromDocumentChecklistItem(String documentChecklistItemId) throws ServiceException{
                 String removedState = "FAILED";
                 if (documentChecklistItemId == null || documentChecklistItemId.isEmpty()) { return removedState; }
                 if(!(StandardEntitiesBase.isThisEntity(documentChecklistItemId, StandardEntitiesD.DocumentChecklistItem))) {
@@ -200,7 +200,7 @@ public List<StandardEntitiesBase> GetWhiteListedEntities() throws ServiceExcepti
             }
 
 @Override
-     public DocumentChecklistItemResult createDocumentChecklistItem(String parentRecordId,String documentTypeId) throws ServiceException {
+     public DocumentChecklistItemResult createDocumentChecklistItem(String parentRecordId, String documentTypeId) throws ServiceException {
           RecordInfo recordInfo = recordUtils.getRecordInfoByApiName(StandardEntitiesD.DocumentChecklistItem.getApiName());
           Record documentChecklistRecord = recordFactory.createEmptyRecord(recordInfo);
 

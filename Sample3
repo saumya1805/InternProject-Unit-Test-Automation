@@ -1,0 +1,153 @@
+package platform.monitoring.eventlogfile.insights;
+
+import static platform.monitoring.eventlogfile.insights.AdminAnalyticsDAO.NO_LIMIT;
+import static platform.monitoring.eventlogfile.insights.EventLogFileAnalyticsMessageQueueParams.PARAM_EVENT_LOG_FILE_ANALYTIC_JOB_ID;
+import static platform.monitoring.eventlogfile.insights.EventLogFileAnalyticsMessageQueueParams.PARAM_ORGANIZATION_ID;
+import static platform.monitoring.eventlogfile.insights.EventLogFileAnalyticsMessageQueueParams.PARAM_RELATED_REQUEST_ID;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import com.force.commons.util.stack.StackUtils;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Stopwatch;
+import common.api.soap.Entity;
+import platform.monitoring.eventlogfile.logging.EventLogFileInsightsIntegration.Status;
+import platform.monitoring.eventlogfile.udd.EventLogFileAnalyticJobDAO;
+import platform.monitoring.eventlogfile.udd.EventLogFileAnalyticJobObject;
+import platform.monitoring.eventlogfile.udd.EventLogFileObject;
+import platform.monitoring.eventlogfile.udd.EventLogFileUploadStatus;
+
+43  @Service
+44  @Lazy
+45  public class EventLogFileAppendUploader {
+46
+47      @Autowired
+48      private EventLogFileAnalyticsLogger logger;
+49
+50      @Autowired
+51      private EventLogFileAnalyticsLogMessageGenerator messageGenerator;
+52
+53      @Autowired
+54      private EventLogFileAnalyticsPermChecker permChecker;
+55
+56      @Autowired
+57      private EventLogFileAnalyticJobDAO elfAnalyticJobDAO;
+58
+59      @Autowired
+60      private EventLogFileAnalyticsAutoProcUserDequeueContextHandler autoProcDequeueContextHandler;
+61
+62      @Autowired
+63      private EventLogFileAnalyticsDateDeterminer dateDeterminer;
+64
+65      @Autowired
+66      private EventLogFileAnalyticsDatabaseHandler databaseHandler;
+
+77      public void processMessage(Map<String, String> jobParamMap) throws Exception {
+78
+79          final String relatedRequestId = jobParamMap.get(PARAM_RELATED_REQUEST_ID);
+80          final String elfAnalyticsJobId = jobParamMap.get(PARAM_EVENT_LOG_FILE_ANALYTIC_JOB_ID);
+81          final String orgId = jobParamMap.get(PARAM_ORGANIZATION_ID);
+82
+83          autoProcDequeueContextHandler.establishContextAsAutoProcUser(orgId, relatedRequestId);
+84          EventLogFileAnalyticJobObject jobObject = getEventLogFileAnalyticObject(elfAnalyticsJobId, relatedRequestId, orgId);
+85
+86          AnalyticsAppEnum analyticsAppEnum = AnalyticsAppEnum.fromTemplateName(jobObject.getTemplateSource().getAppTemplateName());
+87          EventLogFileFrequency eventLogFileFrequency = EventLogFileFrequency.fromEventLogIntervalEnumApiValue(jobObject.getEventLogFileInterval().getApiValue());
+88
+89          final Integer storagePeriod = jobObject.getStoragePeriod();
+90          final String eventTypeApiValue = jobObject.getEventType().getApiValue();
+91          final String folderId = jobObject.getFolder();
+92          final String datasetName = jobObject.getDatasetName();
+93          Stopwatch stopwatch = Stopwatch.createStarted();
+94          try {
+95              // make sure that permissions are still there required for the integration
+96              boolean isRequiredOrgBitsEnabled = permChecker.checkRequiredOrgBits(orgId, eventTypeApiValue, folderId, eventLogFileFrequency, analyticsAppEnum);
+97
+98              // do processing only if the org perms are enabled for this org.
+99              EventLogFileUploadStatus status = null;
+100              String insightsExternalDataId = null;
+101              long totalETLFileSizeInBytes = -1;
+102
+103              if (isRequiredOrgBitsEnabled) {
+104                  final Entity[] elfEntities = getEntities(jobObject, orgId);
+105                  String logMsg = messageGenerator.getElfStatusMsg(elfEntities.length, storagePeriod);
+106                  logger.writeLog(eventLogFileFrequency, Status.SUCCESS, orgId, eventTypeApiValue, folderId, logMsg);
+107
+108                  if (elfEntities.length > 0) {
+109                      AdminAnalyticsETLProcess etlProcess = createETLProcessInstance(eventLogFileFrequency);
+110
+111                      // perform the extract transform and load process
+112                      etlProcess.performETL(eventTypeApiValue, folderId, datasetName, elfEntities);
+113
+114                      // set the state of the event log file analytic job to in progress, to denote wave infra ingest is in progress.
+115                      status = EventLogFileUploadStatus.UPLOAD_IN_PROGRESS;
+116                      insightsExternalDataId = etlProcess.getInsightsExternalDataId();
+117                      totalETLFileSizeInBytes = etlProcess.getTotalETLFileSizeInBytes();
+118                  } else {
+119                      status = EventLogFileUploadStatus.UPLOAD_SKIPPED;
+120                  }
+121              } else {
+122                  status = EventLogFileUploadStatus.UPLOAD_FAILED;
+123              }
+124
+125              elfAnalyticJobDAO.updateStatusAndInsightsExternalDataId(jobObject, status, insightsExternalDataId);
+126              commit();
+127
+128              String successfullyStatusSetMsg = (status == EventLogFileUploadStatus.UPLOAD_IN_PROGRESS) ?
+129                      messageGenerator.getCompletedStateMachineMsg() :
+130                      messageGenerator.getSuccessfullySetElfAnalyticsJobStatusMsg(status.getApiValue());
+131
+132              long elapsedTimeMillis = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+133              logger.writeLog(eventLogFileFrequency, Status.SUCCESS, orgId, eventTypeApiValue, folderId, elapsedTimeMillis, totalETLFileSizeInBytes, relatedRequestId, successfullyStatusSetMsg);
+134
+135          } catch (Exception ex) {
+136              final String errorMessage = messageGenerator.getDequeueFailureMsg(datasetName, String.valueOf(storagePeriod), StackUtils.getStackTrace(ex));
+137              long elapsedTimeMillis = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+138              logger.writeLog(eventLogFileFrequency, Status.FAILURE, orgId, eventTypeApiValue, folderId, elapsedTimeMillis, relatedRequestId, errorMessage);
+139
+140              /**
+141               * NOTE: Please do not set the status of the eflAnalyticJobObject to failed here. Throw the error and let
+142               * {@link AdminAnalyticsMessageHandler} set the status after the retries are exhausted
+143               */
+144              throw ex;
+145          }
+146      }
+147
+
+168      @VisibleForTesting
+169      public Entity[] getEntities(EventLogFileAnalyticJobObject elfAnalyticJobObject, String orgId) throws Exception {
+170          EventLogFileFrequency eventLogFileFrequency = EventLogFileFrequency
+171                  .fromEventLogIntervalEnumApiValue(elfAnalyticJobObject.getEventLogFileInterval().getApiValue());
+172
+173          // calculate the min log date from the jobs upload end date and storage period
+174          Calendar minLogDate = dateDeterminer.getDaysAgo(elfAnalyticJobObject.getUploadEndDate(), elfAnalyticJobObject.getStoragePeriod());
+175
+176          // we'll have to truncate the calculated min log date to set hour, min, and sec to zero, because it'll be used to compare against ELF.LogDate
+177          Calendar minLogDateTruncated =  dateDeterminer.truncateToMidnight(minLogDate);
+178
+179          Entity[] elfEntities = eventLogFileFrequency.getAdminAnalyticsDao().getEventLogFilesBetweenStartAndEndDate(
+180                  elfAnalyticJobObject.getEventType().getApiValue(), NO_LIMIT, orgId,
+181                  elfAnalyticJobObject.getUploadStartDate(), elfAnalyticJobObject.getUploadEndDate(), minLogDateTruncated);
+182          if (databaseHandler.shouldCommit()) { databaseHandler.releaseDBConnection(); }
+183          return elfEntities;
+184      }
+185
+186      EventLogFileAnalyticJobObject getEventLogFileAnalyticObject(String elfAnalyticsJobId,
+187              String relatedRequestId, String orgId) throws SQLException {
+188          EventLogFileAnalyticJobObject elfAnalyticJobObject;
+189          try {
+190              elfAnalyticJobObject = elfAnalyticJobDAO.load(elfAnalyticsJobId);
+191          } catch (SQLException ex) {
+192              String errorMessage = messageGenerator.getEventLogFileAnalyticsJobFailureMsg("load",
+193                      StackUtils.getStackTrace(ex));
+194
+195              logger.writeLog(Status.FAILURE, orgId, relatedRequestId, errorMessage);
+196              throw ex;
+197          }
+198          return elfAnalyticJobObject;
+199      }
+200  }

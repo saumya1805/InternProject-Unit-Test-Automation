@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.util.List;
 import static javafx.scene.paint.Color.color;
 
@@ -33,6 +36,9 @@ public class UI extends JFrame{
     private JLabel info1;
     private JLabel info2;
     private JLabel info3;
+    private JButton button1;
+
+    public String fileName;
 
     public Set<String> box2=new HashSet<>();
 
@@ -182,7 +188,10 @@ public class UI extends JFrame{
                 String publicFunctionName= (String) publicFuncName.getSelectedItem();
                 String functionName=custFuncName.getText();
                 try {
-                    if (Files.lines(Paths.get("TestCodeTester.java")).filter(line1 -> line1.contains(functionName)).count() != 0){
+                    if(functionName.equals("")){
+                        JOptionPane.showMessageDialog(mainPanel,"Please enter a function name");
+                    }
+                    else if (Files.lines(Paths.get(fileName+"Tester.java")).filter(line1 -> line1.contains(functionName)).count() != 0){
                         JOptionPane.showMessageDialog(mainPanel,"A test function with the function name provided is already present. Choose another function name");
                     }
                     else{
@@ -212,10 +221,11 @@ public class UI extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 addFlag=0;
                 try {
+                    customizationSpace.append("}\n");
                     output.write(customizationSpace.getText());
                     output.write("\n");
                     output.close();
-                    output=new FileWriter("TestCodeTester.java",true);
+                    output=new FileWriter(fileName+"Tester.java",true);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -225,7 +235,7 @@ public class UI extends JFrame{
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                System.exit(0);
             }
         });
         generateTestButton.addActionListener(new ActionListener() {
@@ -234,6 +244,7 @@ public class UI extends JFrame{
                 try {
                     output.write("}\n");
                     output.close();
+                    System.exit(0);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -310,6 +321,40 @@ public class UI extends JFrame{
                 }
             }
         });
+
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UIManager.put("OptionPane.minimumSize",new Dimension(300,300));
+
+                DefaultMutableTreeNode root=new DefaultMutableTreeNode("Code Preview");
+
+                for(Map.Entry<String,HashMap<String,List<String>>> entry:functionData.entrySet()){
+                    DefaultMutableTreeNode row=new DefaultMutableTreeNode(entry.getKey());
+                    for(Map.Entry<String,List<String>> entry2:entry.getValue().entrySet()){
+                        for(int i=0;i<entry2.getValue().size();i++){
+                            DefaultMutableTreeNode node=new DefaultMutableTreeNode(entry2.getValue().get(i));
+                            row.add(node);
+                        }
+                    }
+                    root.add(row);
+                }
+                DefaultTreeModel model=new DefaultTreeModel(root);
+                JTree codePreview=new JTree(model);
+
+                Enumeration e1 = root.breadthFirstEnumeration();
+                while(e1.hasMoreElements())
+                {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode)e1.nextElement();
+                    if(node.isLeaf()) break;
+                    int row = codePreview.getRowForPath(new TreePath(node.getPath()));
+                    codePreview.expandRow(row);
+                }
+
+                JOptionPane.showMessageDialog(mainPanel,"Code Preview:\n");
+                JOptionPane.showMessageDialog(mainPanel,codePreview);
+            }
+        });
     }
 
     //Function that parses the code to be tested
@@ -319,9 +364,10 @@ public class UI extends JFrame{
         File file = new File(filePath);
         FileReader fr = null;
         try {
+            fileName=file.getName();
             fr = new FileReader(file);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(mainPanel,"No such file exists. Enter the file path again");
         }
 
         //Reads the file line by line
@@ -330,7 +376,7 @@ public class UI extends JFrame{
         String line;
 
         //Creates file that will store the unit test code corresponding to the code to be tested
-        File file1 = new File("TestCodeTester.java");
+        File file1 = new File(fileName+"Tester.java");
 
         //To write into the unit test code file
 
@@ -341,10 +387,10 @@ public class UI extends JFrame{
 
             if (value) {
                 System.out.println("New Java File is created.");
-                output = new FileWriter("TestCodeTester.java", true);
+                output = new FileWriter(fileName+"Tester.java", true);
             } else {
                 System.out.println("The file already exists.");
-                output = new FileWriter("TestCodeTester.java", true);
+                output = new FileWriter(fileName+"Tester.java", true);
                 testedBefore = 1;
                 JOptionPane.showMessageDialog(mainPanel,"A unit test for this code already exists. Proceed with Test generation.");
             }
@@ -391,7 +437,7 @@ public class UI extends JFrame{
                 output.write("\n");
 
                 //Declares the public class which will hold the mocks and tests in the unit test code file
-                output.write("public class TestCodeTester{\n\n");
+                output.write("public class "+fileName+"Tester{\n\n");
 
                 //@InjectMocks creates class instances which need to be tested in the test class
                 output.write("@InjectMocks\n");
@@ -433,10 +479,17 @@ public class UI extends JFrame{
                 //System.out.println("In autowire");
                 autowiredFlag = 1;
             } else if (autowiredFlag == 1) {
-                //System.out.println("In autowire body");
-                String temp = line.substring(line.indexOf("private") + 8, line.indexOf(";")); //Abc abc
-                String objName = temp.substring(temp.indexOf(" ") + 1);
-                autowiredObjectList.add(objName);
+                String objName="";
+                if(line.contains("private")){
+                    String temp = line.substring(line.indexOf("private") + 8, line.indexOf(";")); //Abc abc
+                    objName = temp.substring(temp.indexOf(" ") + 1);
+                }
+                else if(line.contains("protected")){
+                    String temp = line.substring(line.indexOf("protected") + 10, line.indexOf(";")); //Abc abc
+                    objName = temp.substring(temp.indexOf(" ") + 1);
+                }
+                if(objName!="")
+                    autowiredObjectList.add(objName);
                 autowiredFlag = 0;
             } else {
                     for (int i = 0; i < autowiredObjectList.size(); i++) {
@@ -480,26 +533,5 @@ public class UI extends JFrame{
                 objName.addItem(s);
             }
         }
-
-        //final Object[] row = new Object[4];
-
-        /*for (Map.Entry<String, HashMap<String, List<String>>> entry : functionData.entrySet()) {
-            row[0] = entry.getKey();
-            comboBox3.addItem(entry.getKey());
-            int flag = 0;
-            for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
-
-                for (int i = 0; i < entry2.getValue().size(); i++) {
-                    if (flag == 0) {
-                        flag = 1;
-                    } else {
-                        row[0] = "";
-                    }
-                    row[1] = entry2.getKey();
-                    row[2] = entry2.getValue().get(i);
-                    model.addRow(row);
-                }
-            }
-        }*/
     }
 }

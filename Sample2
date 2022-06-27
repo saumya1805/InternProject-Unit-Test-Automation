@@ -1,0 +1,77 @@
+package ui.commerce.impl.test.util;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import com.salesforce.runtime.services.ui.label.service.LabelService;
+import test.helper.TestNameGenerator;
+import ui.force.api.error.ForceErrorUtil;
+import ui.services.ComponentService;
+import ui.services.RecordService;
+import ui.services.api.runtime.services.ui.user.service.UserService;
+import ui.services.common.context.*;
+import ui.services.utils.*;
+import ui.uitier.utils.*;
+import ui.uitier.utils.facade.UiTierBaseTest;
+
+public class ContractBaseTest extends UiTierBaseTest {
+
+        @Autowired
+        protected AccountTestingUtil accountTestUtil;
+
+        @Autowired
+        protected ContactTestingUtil contactUtil;
+
+        @Autowired
+        protected UserService userService;
+
+        @Autowired
+        protected LabelService labelService;
+
+        @Autowired
+        protected ApplicationProvider applicationProvider;
+
+        @Autowired
+        protected ComponentService componentService;
+
+        @Autowired
+        protected UIServiceRequestContextProvider uiServiceRequestContextProvider;
+
+        @Autowired
+        protected UIServiceAppInfoProvider uiServiceAppInfoProvider;
+
+        @Autowired
+        protected ForceErrorUtil errorUtil;
+
+        @Autowired
+        protected AccountTestingUtil accountTestingUtil;
+
+        @Autowired
+        protected ContactTestingUtil contactTestingUtil;
+
+        @Autowired
+        protected Pricebook2TestingUtil pb2TestingUtil;
+
+        @Autowired
+        protected ContractTestingUtil contractTestingUtil;
+
+        @Autowired
+        protected AdminApiUtil adminApiUtil;
+
+        @Autowired
+        protected RecordService recordService;
+
+        @Autowired
+        protected RecordUtils recordUtils;
+
+        @Autowired
+        protected GackUtil gackUtil;
+
+      public String makeContractWithDraftStatus() throws Exception{
+            String accountId = accountTestingUtil.makeEntity("Test Direct Account");
+            String contactId = contactTestingUtil.makeEntity(accountId);
+            reestablishRequestToAdminUser();
+            String pricebook2Id = pb2TestingUtil.makeEntity(TestNameGenerator.generateUniqueName(PB_NAME), true);
+            String contractId = contractTestingUtil.makeEntity(userTestingUtil.getUserId(), CONTRACT_NAME, accountId,
+            contactId, pricebook2Id);
+            return contractId;
+      }
+}
