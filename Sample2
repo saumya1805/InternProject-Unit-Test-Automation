@@ -1,5 +1,3 @@
-package ui.commerce.impl.test.util;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import com.salesforce.runtime.services.ui.label.service.LabelService;
 import test.helper.TestNameGenerator;

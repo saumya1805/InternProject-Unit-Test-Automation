@@ -33,20 +33,16 @@ public class UI extends JFrame{
     private JButton generateTestButton;
     private JComboBox assertsList;
     private JButton addToTextAreaButton2;
-    private JLabel info1;
-    private JLabel info2;
-    private JLabel info3;
     private JButton button1;
+    private JLabel setup;
+    private JLabel testGen;
+    private JLabel assertGen;
 
     public String fileName;
 
     public Set<String> box2=new HashSet<>();
 
     public static boolean check = false;
-
-    String s1;
-
-    String s2;
 
     public static int numKeys;
 
@@ -74,19 +70,6 @@ public class UI extends JFrame{
     //Hashmap storing information about the public functions being declared in a class, what external objects these functions use and what functions fo these external objects call
     public static HashMap<String, HashMap<String, List<String>>> functionData = new LinkedHashMap();
 
-    //Hashmap to store what dummy value will be returned for the mocked functions
-
-    public static HashMap<String, Vector<String>> whenReturnThisFunctions = new LinkedHashMap();
-
-    public static Vector<String> beforeData = new Vector<>();
-
-    public static String t1;
-
-    public static String t2;
-
-    public static String t3;
-
-    public static String t4;
 
     //Flag for registering that previous line had an @Autowired object
     public static int autowiredFlag = 0;
@@ -123,9 +106,9 @@ public class UI extends JFrame{
         Font f=new Font("Menlo",0,16);
         objName.getEditor().getEditorComponent().setFont(f);
 
-        info1.setToolTipText("<html>Choose the object name and function name<br>and click the <b>Add to Text Area</b> button following<br>which you can add the parameters and return<br>value. Do this for each setup statement<br>you wish to add and once done click the<br><b>Add to unit test</b> button beside<br>the text area.</html>");
-        info2.setToolTipText("<html>Choose the function for which you<br>wish to create a test function<br>and fill in a unique function name.<br>Choose the object and external function you<br>require and click <b>Add to text area</b> for<br>each. Customize in the text area<br> and once done click the <b>Add to unit test</b><br>button</html>");
-        info3.setToolTipText("<html>Select the assert function you wish to insert<br>and click the <b>Add to Text Area</b><br>button. Add the parameters in the text area<br> and once done click the <b>Add to unit test</b><br>button</html>");
+        setup.setToolTipText("<html>Choose the object name and function name<br>and click the <b>Add to Text Area</b> button following<br>which you can add the parameters and return<br>value. Do this for each setup statement<br>you wish to add and once done click the<br><b>Add to unit test</b> button beside<br>the text area.</html>");
+        testGen.setToolTipText("<html>Choose the function for which you<br>wish to create a test function<br>and fill in a unique function name.<br>Choose the object and external function you<br>require and click <b>Add to text area</b> for<br>each. Customize in the text area<br> and once done click the <b>Add to unit test</b><br>button</html>");
+        assertGen.setToolTipText("<html>Select the assert function you wish to insert<br>and click the <b>Add to Text Area</b><br>button. Add the parameters in the text area<br> and once done click the <b>Add to unit test</b><br>button</html>");
 
         funcName.setEditable(true);
         funcName.getEditor().getEditorComponent().setBackground(color);
@@ -458,7 +441,6 @@ public class UI extends JFrame{
             //Public function has been detected in the line
             else if (line.contains("throws") && line.contains("public")) {
 
-                //System.out.println("Hi in throw");
                 //Logic to extract function name
                 int index = line.indexOf("public") + 7;
                 int flag = 0;
@@ -476,7 +458,6 @@ public class UI extends JFrame{
                 functionsToBeTested.add(functionName);
                 currFunction = functionName;
             } else if (line.contains("@Autowired")) {
-                //System.out.println("In autowire");
                 autowiredFlag = 1;
             } else if (autowiredFlag == 1) {
                 String objName="";
@@ -488,39 +469,39 @@ public class UI extends JFrame{
                     String temp = line.substring(line.indexOf("protected") + 10, line.indexOf(";")); //Abc abc
                     objName = temp.substring(temp.indexOf(" ") + 1);
                 }
-                if(objName!="")
+                if(!objName.equals(""))
                     autowiredObjectList.add(objName);
                 autowiredFlag = 0;
             } else {
-                    for (int i = 0; i < autowiredObjectList.size(); i++) {
-                        if (line.contains(autowiredObjectList.get(i) + ".")) {
-                            int startIndex = line.indexOf(autowiredObjectList.get(i));
-                            int endIndex = startIndex + 1;
-                            while (endIndex < line.length()) {
-                                if (line.charAt(endIndex) == '(') {
-                                    endIndex++;
-                                    break;
-                                }
+                for (String s : autowiredObjectList) {
+                    if (line.contains(s + ".")) {
+                        int startIndex = line.indexOf(s);
+                        int endIndex = startIndex + 1;
+                        while (endIndex < line.length()) {
+                            if (line.charAt(endIndex) == '(') {
                                 endIndex++;
+                                break;
                             }
-
-                            if (!functionData.get(currFunction).containsKey(autowiredObjectList.get(i))) {
-                                List<String> temp = new ArrayList<>();
-                                temp.add(line.substring(startIndex, endIndex) + ")");
-                                functionData.get(currFunction).put(autowiredObjectList.get(i), temp);
-                            } else {
-                                functionData.get(currFunction).get(autowiredObjectList.get(i)).add(line.substring(startIndex, endIndex) + ")");
-                            }
-                            line = line.trim();
-                            List<String> temp1 = Arrays.asList(line.split(" "));
-                            String startWord = temp1.get(0);
-                            //Not returning a value
-                            if (startWord.contains(".")) {
-                                continue;
-                            }
-                            break;
+                            endIndex++;
                         }
+
+                        if (!functionData.get(currFunction).containsKey(s)) {
+                            List<String> temp = new ArrayList<>();
+                            temp.add(line.substring(startIndex, endIndex) + ")");
+                            functionData.get(currFunction).put(s, temp);
+                        } else {
+                            functionData.get(currFunction).get(s).add(line.substring(startIndex, endIndex) + ")");
+                        }
+                        line = line.trim();
+                        List<String> temp1 = Arrays.asList(line.split(" "));
+                        String startWord = temp1.get(0);
+                        //Not returning a value
+                        if (startWord.contains(".")) {
+                            continue;
+                        }
+                        break;
                     }
+                }
             }
             numKeys = functionData.size();
         }

@@ -31,141 +31,138 @@ import ui.services.utils.RecordUtils;
 @Lazy
 @EscalationPermSet(state = State.LOG)
 public class TaskCreateNavigationCommand implements NavigationCommand {
-41      @Autowired
-42      private NavigationEventProvider navigationEventProvider;
-43      @Autowired
-44      private TaskDao taskDao;
-45      @Autowired
-46      private TaskHelper taskHelper;
-47      @Autowired
-48      private ListViewService listViewService;
-49      @Autowired
-50      private RecordUtils recordUtils;
-51      @Autowired
-52      private PermAndPrefUtil permAndPrefUtil;
-53      @Override
-54      public NavigationEvent execute(NavigationContext navigationContext) throws ServiceException {
-55
-56          // getInContextOfRecordId() returns the record id of the task we just saved, so it's guaranteed not null.
-57          String createdTaskRecordId = navigationContext.getInContextOfRecordId();
-58
-59          Record createdTaskRecord = null;
-60          try{
-61              // since we have to load record to see if it is a main recurring task, load it here first to potentially save a call later
-62              createdTaskRecord = taskDao.getTaskRecord(createdTaskRecordId);
-63          } catch (ServiceException e) {
-64              // This means the created task is assigned to another user and the current user doesn't have access to it.
-65              // That's fine; we'll show a generic 'task creation successful' message.
-66              if (!(e.getCause() instanceof SObjectException || e.getCause() instanceof ConnectInJavaException)) {
-67                  // We got some other exception besides the No Access exception.
-68                  // Just throw it.
-69                  throw e;
-70              }
-71          }
-72
-73          // added a check here to see if createdTaskRecord is  null, in case if it is delegated
-74          boolean createdTaskInCurrentList = false;
-75          if (createdTaskRecord != null) {
-76              // if the task we created is a main recurring task, substitute createdTaskRecord with the first occurrence in the series
-77              if (taskHelper.isMainRecurringTask(createdTaskRecord)) {
-78                  createdTaskRecord = taskDao.getFirstOccurrence(createdTaskRecordId);
-79              }
-80          }
-81
-82          RecordActionsPair taskRecordActionPair;
-83          if (isTaskListViewsDisabled()) {
-84              // if in main/detail UI, check if task should be added to filter and get task
-85              // added a check here to see if createdTaskRecord is  null because it may be a main recurring task that has no occurrences
-86              if (createdTaskRecord != null) {
-87                  String listName = navigationContext.getNavigationLocationId();
-88                  RecordInfo recordInfo = recordUtils.getRecordInfo(StandardEntitiesT.Task);
-89                  ListLayoutUiAdapter listView = taskHelper.getListview(recordInfo, listName);
-90                  createdTaskInCurrentList = listViewService.isIdMatchedForAListView(listView, recordInfo, listName, createdTaskRecord.getId());
-91              }
-92              if (!createdTaskInCurrentList) {
-93                  // This task should not be added to current filter. Still show a generic task creation message
-94                  taskRecordActionPair = null;
-95              } else {
-96                  taskRecordActionPair = getTaskRecordActionPair(createdTaskRecord);
-97              }
-98          } else {
-99              // if in listViews UI, get task details and handle whether to show task details on right/navigate to sobject downstream
-100              // since we can't check whether we are in split mode or not from here
-101              taskRecordActionPair = getTaskRecordActionPair(createdTaskRecord);
-102          }
-103
-104          String prependEventName = Components.RuntimeActivities.TASK_AFTER_CREATE_PREPEND.getFQN();
-105          Map<String, Object> taskPrependEventAttributes = Maps.newHashMapWithExpectedSize(1);
-106          taskPrependEventAttributes.put("createdTaskAndActions", taskRecordActionPair);
-107          taskPrependEventAttributes.put("recordId", taskRecordActionPair != null ? taskRecordActionPair.getRecord().getId() : null);
-108          return navigationEventProvider.provide(prependEventName, taskPrependEventAttributes);
-109      }
-110
-111      /**
-112       * Helper method to get task and actions for given task
-113       * @throws ServiceException
-114       */
-115      private RecordActionsPair getTaskRecordActionPair(Record taskRecord) throws ServiceException {
-116          RecordActionsPair taskRecordActionPair = null;
-117          if (taskRecord != null) {
-118              try {
-119                  // Note: this does not reload the task record from recordGvpUtil.
-120                  // It just loads the actions associated with createdTaskRecord
-121                  // and returns a RecordActionsPair of createdTaskRecord and the actions.
-122                  taskRecordActionPair = taskDao.getTaskAndActions(taskRecord);
-123              } catch (ServiceException e) {
-124                  // This means the created task is assigned to another user and the current user doesn't have access to it.
-125                  // That's fine; we'll show a generic 'task creation successful' message.
-126                  if (!(e.getCause() instanceof SObjectException)) {
-127                      // We got some other exception besides the No Access exception.
-128                      // Just throw it.
-129                      throw e;
-130                  }
-131                  taskRecordActionPair = null;
-132              }
-133          } else {
-134              taskRecordActionPair = null;
-135          }
-136          return taskRecordActionPair;
-137      }
 
-143      private boolean isTaskListViewsDisabled() {
-144          return permAndPrefUtil.isEnabled(ActivitiesAccessCheck.ORG_HIDES_TASK_LIST_VIEWS);
-145      }
-146
-147      /**
-148       * Setter for the navigationEventProvider attribute. <b>This should only be used in a test setting.</b>
-149       */
-150      protected void setNavigationEventProvider(NavigationEventProvider navigationEventProvider) {
-151          this.navigationEventProvider = navigationEventProvider;
-152      }
-153
-154      /**
-155       * Setter for the TaskDao attribute. <b>This should only be used in a test setting.</b>
-156       */
-157      protected void setTaskDao(TaskDao taskDao) {
-158          this.taskDao = taskDao;
-159      }
-160
-161      /**
-162       * Setter for the navigationEventProvider attribute. <b>This should only be used in a test setting.</b>
-163       */
-164      protected void setTaskHelper(TaskHelper taskHelper) {
-165          this.taskHelper = taskHelper;
-166      }
-167
-168      /**
-169       * Setter for the listViewService attribute. <b>This should only be used in a test setting.</b>
-170       */
-171      protected void setListViewService(ListViewService listViewService) {
-172          this.listViewService = listViewService;
-173      }
-174
-175      /**
-176       * Setter for the recordUtils attribute. <b>This should only be used in a test setting.</b>
-177       */
-178      protected void setRecordUtils(RecordUtils recordUtils) {
-179          this.recordUtils = recordUtils;
-180      }
-186  }
-187
+      @Autowired
+      private NavigationEventProvider navigationEventProvider;
+      @Autowired
+      private TaskDao taskDao;
+      @Autowired
+      private TaskHelper taskHelper;
+      @Autowired
+      private ListViewService listViewService;
+      @Autowired
+      private RecordUtils recordUtils;
+      @Autowired
+      private PermAndPrefUtil permAndPrefUtil;
+      @Override
+      public NavigationEvent execute(NavigationContext navigationContext) throws ServiceException {
+
+          // getInContextOfRecordId() returns the record id of the task we just saved, so it's guaranteed not null.
+          String createdTaskRecordId = navigationContext.getInContextOfRecordId();
+
+          Record createdTaskRecord = null;
+          try{
+              // since we have to load record to see if it is a main recurring task, load it here first to potentially save a call later
+              createdTaskRecord = taskDao.getTaskRecord(createdTaskRecordId);
+          } catch (ServiceException e) {
+              // This means the created task is assigned to another user and the current user doesn't have access to it.
+              // That's fine; we'll show a generic 'task creation successful' message.
+              if (!(e.getCause() instanceof SObjectException || e.getCause() instanceof ConnectInJavaException)) {
+                  // We got some other exception besides the No Access exception.
+                  // Just throw it.
+                  throw e;
+              }
+          }
+
+          // added a check here to see if createdTaskRecord is  null, in case if it is delegated
+          boolean createdTaskInCurrentList = false;
+          if (createdTaskRecord != null) {
+              // if the task we created is a main recurring task, substitute createdTaskRecord with the first occurrence in the series
+              if (taskHelper.isMainRecurringTask(createdTaskRecord)) {
+                  createdTaskRecord = taskDao.getFirstOccurrence(createdTaskRecordId);
+              }
+          }
+
+          RecordActionsPair taskRecordActionPair;
+          if (isTaskListViewsDisabled()) {
+              // if in main/detail UI, check if task should be added to filter and get task
+              // added a check here to see if createdTaskRecord is  null because it may be a main recurring task that has no occurrences
+              if (createdTaskRecord != null) {
+                  String listName = navigationContext.getNavigationLocationId();
+                  RecordInfo recordInfo = recordUtils.getRecordInfo(StandardEntitiesT.Task);
+                  ListLayoutUiAdapter listView = taskHelper.getListview(recordInfo, listName);
+                  createdTaskInCurrentList = listViewService.isIdMatchedForAListView(listView, recordInfo, listName, createdTaskRecord.getId());
+              }
+              if (!createdTaskInCurrentList)
+                  // This task should not be added to current filter. Still show a generic task creation message
+                  taskRecordActionPair = null;
+              } else {
+                  taskRecordActionPair = getTaskRecordActionPair(createdTaskRecord);
+              }
+          } else {
+              // if in listViews UI, get task details and handle whether to show task details on right/navigate to sobject downstream
+              // since we can't check whether we are in split mode or not from here
+              taskRecordActionPair = getTaskRecordActionPair(createdTaskRecord);
+          }
+
+          String prependEventName = Components.RuntimeActivities.TASK_AFTER_CREATE_PREPEND.getFQN();
+          Map<String, Object> taskPrependEventAttributes = Maps.newHashMapWithExpectedSize(1);
+          taskPrependEventAttributes.put("createdTaskAndActions", taskRecordActionPair);
+          taskPrependEventAttributes.put("recordId", taskRecordActionPair != null ? taskRecordActionPair.getRecord().getId() : null);
+          return navigationEventProvider.provide(prependEventName, taskPrependEventAttributes);
+      }
+
+
+      private RecordActionsPair getTaskRecordActionPair(Record taskRecord) throws ServiceException {
+          RecordActionsPair taskRecordActionPair = null;
+          if (taskRecord != null) {
+              try {
+                  // Note: this does not reload the task record from recordGvpUtil.
+                  // It just loads the actions associated with createdTaskRecord
+                  // and returns a RecordActionsPair of createdTaskRecord and the actions.
+                  taskRecordActionPair = taskDao.getTaskAndActions(taskRecord);
+              } catch (ServiceException e) {
+                  // This means the created task is assigned to another user and the current user doesn't have access to it.
+                  // That's fine; we'll show a generic 'task creation successful' message.
+                  if (!(e.getCause() instanceof SObjectException)) {
+                      // We got some other exception besides the No Access exception.
+                      // Just throw it.
+                      throw e;
+                  }
+                  taskRecordActionPair = null;
+              }
+          } else {
+              taskRecordActionPair = null;
+          }
+          return taskRecordActionPair;
+      }
+
+      private boolean isTaskListViewsDisabled() {
+          return permAndPrefUtil.isEnabled(ActivitiesAccessCheck.ORG_HIDES_TASK_LIST_VIEWS);
+      }
+
+      /**
+       * Setter for the navigationEventProvider attribute. <b>This should only be used in a test setting.</b>
+       */
+      protected void setNavigationEventProvider(NavigationEventProvider navigationEventProvider) {
+          this.navigationEventProvider = navigationEventProvider;
+      }
+
+      /**
+       * Setter for the TaskDao attribute. <b>This should only be used in a test setting.</b>
+       */
+      protected void setTaskDao(TaskDao taskDao) {
+          this.taskDao = taskDao;
+      }
+
+      /**
+       * Setter for the navigationEventProvider attribute. <b>This should only be used in a test setting.</b>
+       */
+      protected void setTaskHelper(TaskHelper taskHelper) {
+          this.taskHelper = taskHelper;
+      }
+
+      /**
+       * Setter for the listViewService attribute. <b>This should only be used in a test setting.</b>
+       */
+      protected void setListViewService(ListViewService listViewService) {
+          this.listViewService = listViewService;
+      }
+
+      /**
+       * Setter for the recordUtils attribute. <b>This should only be used in a test setting.</b>
+      */
+      protected void setRecordUtils(RecordUtils recordUtils) {
+          this.recordUtils = recordUtils;
+      }
+  }

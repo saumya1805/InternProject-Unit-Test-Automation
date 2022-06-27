@@ -13,91 +13,88 @@ import sfdc.industries.visit.connect.api.resources.*;
 @Component
 @Lazy
 public class GenericVisitConnectFeature implements IGenericVisitConnectFeature {
-31
-32      @Autowired
-33      private Provider<VisitListResource> visitListResourceProvider;
-34
-35      @Autowired
-36      private Provider<VisitOverviewResource> visitOverviewResourceProvider;
-37
-38      @Autowired
-39      private Provider<VisitAddressListResource> visitAddressListResourceProvider;
-40
-41      @Autowired
-42      private Provider<VisitTaskListResource> visitTaskListResourceProvider;
-43
-44      @Autowired
-45      private Provider<VisitQuestionListResource> visitQuestionListResourceProvider;
-46
-47      @Autowired
-48      private Provider<VisitNoteListResource> visitNoteListResourceProvider;
-49
-50      @Autowired
-51      private Provider<VisitImageListResource> visitImageListResourceProvider;
-52
-53      @Autowired
-54      private Provider<VisitSignerListResource> visitSignerListResourceProvider;
-55
-56      @Autowired
-57      private Provider<VisitRelatedListResource> visitRelatedListResourceProvider;
-58
-59      @Autowired
-60      private Provider<CreateVisitResource> createVisitResourceProvider;
-61
-62
 
-66      @Override
-67      public <T>T buildLogicalResource(Class<T> logicalResourceClass, Map<String, Parameter> resourceParameters) throws ServiceException{
-68          if (logicalResourceClass == IVisitListResource.class) {
-69              VisitListResource visitListResource = visitListResourceProvider.get();
-70              visitListResource.setResourceParameters(resourceParameters);
-71              return logicalResourceClass.cast(visitListResource);
-72
-73          } else if (logicalResourceClass == IVisitOverviewResource.class) {
-74              VisitOverviewResource visitOverviewResource = visitOverviewResourceProvider.get();
-75              visitOverviewResource.setResourceParameters(resourceParameters);
-76              return logicalResourceClass.cast(visitOverviewResource);
-77
-78          } else if (logicalResourceClass == IVisitAddressListResource.class) {
-79              VisitAddressListResource visitAddressListResource = visitAddressListResourceProvider.get();
-80              visitAddressListResource.setResourceParameters(resourceParameters);
-81              return logicalResourceClass.cast(visitAddressListResource);
-82
-83          } else if (logicalResourceClass == IVisitTaskListResource.class) {
-84              VisitTaskListResource visitTaskListResource = visitTaskListResourceProvider.get();
-85              visitTaskListResource.setResourceParameters(resourceParameters);
-86              return logicalResourceClass.cast(visitTaskListResource);
-87
-88          } else if (logicalResourceClass == IVisitQuestionListResource.class) {
-89              VisitQuestionListResource visitQuestionListResource = visitQuestionListResourceProvider.get();
-90              visitQuestionListResource.setResourceParameters(resourceParameters);
-91              return logicalResourceClass.cast(visitQuestionListResource);
-92
-93          } else if (logicalResourceClass == IVisitNoteListResource.class) {
-94              VisitNoteListResource visitNoteListResource = visitNoteListResourceProvider.get();
-95              visitNoteListResource.setResourceParameters(resourceParameters);
-96              return logicalResourceClass.cast(visitNoteListResource);
-97
-98          } else if (logicalResourceClass == IVisitImageListResource.class) {
-99              VisitImageListResource visitImageListResource = visitImageListResourceProvider.get();
-100              visitImageListResource.setResourceParameters(resourceParameters);
-101              return logicalResourceClass.cast(visitImageListResource);
-102
-103          } else if (logicalResourceClass == IVisitSignerListResource.class) {
-104              VisitSignerListResource visitSignerListResource = visitSignerListResourceProvider.get();
-105              visitSignerListResource.setResourceParameters(resourceParameters);
-106              return logicalResourceClass.cast(visitSignerListResource);
-107
-108          } else if(logicalResourceClass == IVisitRelatedListResource.class) {
-109              VisitRelatedListResource visitRelatedListResource = visitRelatedListResourceProvider.get();
-110              visitRelatedListResource.setResourceParameters(resourceParameters);
-111              return logicalResourceClass.cast(visitRelatedListResource);
-112          } else if(logicalResourceClass == ICreateVisitResource.class) {
-113              CreateVisitResource createVisitResource = createVisitResourceProvider.get();
-114              createVisitResource.setResourceParameters(resourceParameters);
-115              return logicalResourceClass.cast(createVisitResource);
-116          }
-117          return null;
-118      }
-119
-120  }
+      @Autowired
+      private Provider<VisitListResource> visitListResourceProvider;
+
+      @Autowired
+      private Provider<VisitOverviewResource> visitOverviewResourceProvider;
+
+      @Autowired
+      private Provider<VisitAddressListResource> visitAddressListResourceProvider;
+
+      @Autowired
+      private Provider<VisitTaskListResource> visitTaskListResourceProvider;
+
+      @Autowired
+      private Provider<VisitQuestionListResource> visitQuestionListResourceProvider;
+
+      @Autowired
+      private Provider<VisitNoteListResource> visitNoteListResourceProvider;
+
+      @Autowired
+      private Provider<VisitImageListResource> visitImageListResourceProvider;
+
+      @Autowired
+      private Provider<VisitSignerListResource> visitSignerListResourceProvider;
+
+      @Autowired
+      private Provider<VisitRelatedListResource> visitRelatedListResourceProvider;
+
+      @Autowired
+      private Provider<CreateVisitResource> createVisitResourceProvider;
+
+      @Override
+      public <T>T buildLogicalResource(Class<T> logicalResourceClass, Map<String, Parameter> resourceParameters) throws ServiceException{
+          if (logicalResourceClass == IVisitListResource.class) {
+              VisitListResource visitListResource = visitListResourceProvider.get();
+              visitListResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitListResource);
+
+          } else if (logicalResourceClass == IVisitOverviewResource.class) {
+              VisitOverviewResource visitOverviewResource = visitOverviewResourceProvider.get();
+              visitOverviewResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitOverviewResource);
+
+          } else if (logicalResourceClass == IVisitAddressListResource.class) {
+              VisitAddressListResource visitAddressListResource = visitAddressListResourceProvider.get();
+              visitAddressListResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitAddressListResource);
+
+          } else if (logicalResourceClass == IVisitTaskListResource.class) {
+              VisitTaskListResource visitTaskListResource = visitTaskListResourceProvider.get();
+              visitTaskListResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitTaskListResource);
+
+          } else if (logicalResourceClass == IVisitQuestionListResource.class) {
+              VisitQuestionListResource visitQuestionListResource = visitQuestionListResourceProvider.get();
+              visitQuestionListResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitQuestionListResource);
+
+          } else if (logicalResourceClass == IVisitNoteListResource.class) {
+              VisitNoteListResource visitNoteListResource = visitNoteListResourceProvider.get();
+              visitNoteListResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitNoteListResource);
+
+          } else if (logicalResourceClass == IVisitImageListResource.class) {
+              VisitImageListResource visitImageListResource = visitImageListResourceProvider.get();
+              visitImageListResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitImageListResource);
+
+          } else if (logicalResourceClass == IVisitSignerListResource.class) {
+              VisitSignerListResource visitSignerListResource = visitSignerListResourceProvider.get();
+              visitSignerListResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitSignerListResource);
+
+          } else if(logicalResourceClass == IVisitRelatedListResource.class) {
+              VisitRelatedListResource visitRelatedListResource = visitRelatedListResourceProvider.get();
+              visitRelatedListResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(visitRelatedListResource);
+          } else if(logicalResourceClass == ICreateVisitResource.class) {
+              CreateVisitResource createVisitResource = createVisitResourceProvider.get();
+              createVisitResource.setResourceParameters(resourceParameters);
+              return logicalResourceClass.cast(createVisitResource);
+          }
+          return null;
+      }
+ }
