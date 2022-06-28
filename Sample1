@@ -92,7 +92,6 @@ public boolean HasLinkedEntityRecordsForRecordId(String recordId,String linkedEn
     logService.logErrorMessage(INCORRECT_RECORD_ID);
     throw new ServiceException(INCORRECT_RECORD_ID);
 
-    RecordInfo recordInfo = recordUtils.getRecordInfoByApiName(linkedEntity);
     WhereCondition whereCondition = Condition.equalTo(lookupFieldOnLinkedEntity, recordId);
     List<Record> records = recordService.loadRecords(recordInfo, Mode.VIEW, QUERY_FIELDS, whereCondition, null,null, null, false, SoqlOptions.DONOT_ESCAPE_QUOTES_IN_IN);
     return records != null && !records.isEmpty();

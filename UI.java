@@ -13,9 +13,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.List;
-import static javafx.scene.paint.Color.color;
 
-public class UI extends JFrame{
+public class UI extends JFrame {
     private JPanel mainPanel;
     private JTextField filePath;
     private JButton chooseFileButton;
@@ -38,60 +37,14 @@ public class UI extends JFrame{
     private JLabel testGen;
     private JLabel assertGen;
 
-    public String fileName;
-
-    public Set<String> box2=new HashSet<>();
-
-    public static boolean check = false;
-
-    public static int numKeys;
-
-    public static int beforeFlag = 0;
-
-    FileWriter output;
-
-    //Name of the class being tested
-    public static String nameOfClassBeingTested;
-
-    //Name of current function being parsed. Helps to associate the lines being read in the function body with the function
-    public static String currFunction;
-
-    //The absolute filepath taken as input from the user via the Java Swing GUI
-    public static String inputFilePath;
-
-    //Stores the external objects being referenced in a class which would be mocked
-    public static Vector<String> externalObjectList = new Vector<>();
-
-    //Stores the functions to be used in @Test
-    public static Vector<String> functionsToBeTested = new Vector<>();
-
-    public static Vector<String> autowiredObjectList = new Vector<>();
-
-    //Hashmap storing information about the public functions being declared in a class, what external objects these functions use and what functions fo these external objects call
-    public static HashMap<String, HashMap<String, List<String>>> functionData = new LinkedHashMap();
-
-
-    //Flag for registering that previous line had an @Autowired object
-    public static int autowiredFlag = 0;
-
-    public int ActionFlag=0;
-
-    public int ActionFlag2=0;
-
-    public int ActionFlag3=0;
-
-    public int addFlag=0;
-
-    public int testedBefore=0;
-
     DefaultTableModel model;
 
-    UI() throws IOException{
+    UI() throws IOException {
 
         add(mainPanel);
-        setSize(1200,1500);
-        Color color=new Color(111,151,158);
-        Color color2=new Color(246,246,246);
+        setSize(1200, 1500);
+        Color color = new Color(111, 151, 158);
+        Color color2 = new Color(246, 246, 246);
 
         objName.setUI(new MetalComboBoxUI());
         publicFuncName.setUI(new MetalComboBoxUI());
@@ -103,7 +56,7 @@ public class UI extends JFrame{
         objName.setEditable(true);
         objName.getEditor().getEditorComponent().setBackground(color);
         objName.getEditor().getEditorComponent().setForeground(color2);
-        Font f=new Font("Menlo",0,16);
+        Font f = new Font("Menlo", 0, 16);
         objName.getEditor().getEditorComponent().setFont(f);
 
         setup.setToolTipText("<html>Choose the object name and function name<br>and click the <b>Add to Text Area</b> button following<br>which you can add the parameters and return<br>value. Do this for each setup statement<br>you wish to add and once done click the<br><b>Add to unit test</b> button beside<br>the text area.</html>");
@@ -139,14 +92,14 @@ public class UI extends JFrame{
         chooseFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                inputFilePath=filePath.getText();
+                Backend.inputFilePath = filePath.getText();
                 try {
-                    readUsingFileReader(inputFilePath);
+                    Backend.readUsingFileReader(Backend.inputFilePath);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
 
-                for(Map.Entry<String,HashMap<String,List<String>>> entry : functionData.entrySet()){
+                for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
                     publicFuncName.addItem(entry.getKey());
                 }
             }
@@ -154,38 +107,36 @@ public class UI extends JFrame{
         addToTextAreaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(addFlag==0){
+                if (Backend.addFlag == 0) {
                     customizationSpace.setText("@Before\n");
                     customizationSpace.append("public void beforeTest(){\n\n");
                     customizationSpace.append("MockitoAnnotations.initMocks(this);\n");
-                    addFlag=1;
+                    Backend.addFlag = 1;
                 }
-                String objectName= (String) objName.getSelectedItem();
-                String functionName=(String) funcName.getSelectedItem();
-                customizationSpace.append("when("+functionName+").thenReturn();\n");
+                String objectName = (String) objName.getSelectedItem();
+                String functionName = (String) funcName.getSelectedItem();
+                customizationSpace.append("when(" + functionName + ").thenReturn();\n");
             }
         });
         addToTextAreaButton3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String publicFunctionName= (String) publicFuncName.getSelectedItem();
-                String functionName=custFuncName.getText();
+                String publicFunctionName = (String) publicFuncName.getSelectedItem();
+                String functionName = custFuncName.getText();
                 try {
-                    if(functionName.equals("")){
-                        JOptionPane.showMessageDialog(mainPanel,"Please enter a function name");
-                    }
-                    else if (Files.lines(Paths.get(fileName+"Tester.java")).filter(line1 -> line1.contains(functionName)).count() != 0){
-                        JOptionPane.showMessageDialog(mainPanel,"A test function with the function name provided is already present. Choose another function name");
-                    }
-                    else{
-                        if(addFlag==0){
+                    if (functionName.equals("")) {
+                        JOptionPane.showMessageDialog(mainPanel, "Please enter a function name");
+                    } else if (Files.lines(Paths.get(Backend.fileName + "Tester.java")).filter(line1 -> line1.contains(functionName)).count() != 0) {
+                        JOptionPane.showMessageDialog(mainPanel, "A test function with the function name provided is already present. Choose another function name");
+                    } else {
+                        if (Backend.addFlag == 0) {
                             customizationSpace.setText("@Test\n");
-                            customizationSpace.append("public void "+functionName+"{\n");
-                            addFlag=1;
+                            customizationSpace.append("public void " + functionName + "{\n");
+                            Backend.addFlag = 1;
                         }
-                        String objectName=(String) objName1.getSelectedItem();
-                        String functionName1=(String) funcName1.getSelectedItem();
-                        customizationSpace.append("when("+functionName1+").thenReturn();\n");
+                        String objectName = (String) objName1.getSelectedItem();
+                        String functionName1 = (String) funcName1.getSelectedItem();
+                        customizationSpace.append("when(" + functionName1 + ").thenReturn();\n");
                     }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -195,20 +146,20 @@ public class UI extends JFrame{
         addToTextAreaButton2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String asserts= (String) assertsList.getSelectedItem();
-                customizationSpace.append(asserts+"\n");
+                String asserts = (String) assertsList.getSelectedItem();
+                customizationSpace.append(asserts + "\n");
             }
         });
         AddToUnitTestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addFlag=0;
+                Backend.addFlag = 0;
                 try {
                     customizationSpace.append("}\n");
-                    output.write(customizationSpace.getText());
-                    output.write("\n");
-                    output.close();
-                    output=new FileWriter(fileName+"Tester.java",true);
+                    Backend.output.write(customizationSpace.getText());
+                    Backend.output.write("\n");
+                    Backend.output.close();
+                    Backend.output = new FileWriter(Backend.fileName + "Tester.java", true);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -225,8 +176,8 @@ public class UI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    output.write("}\n");
-                    output.close();
+                    Backend.output.write("}\n");
+                    Backend.output.close();
                     System.exit(0);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -238,21 +189,20 @@ public class UI extends JFrame{
             public void actionPerformed(ActionEvent e) {
 
                 funcName.removeAllItems();
-                if(ActionFlag==0){
-                    ActionFlag=1;
-                }
-                else{
-                    String compare= (String) objName.getSelectedItem();
-                    for(Map.Entry<String,HashMap<String,List<String>>> entry:functionData.entrySet()){
-                        for(Map.Entry<String,List<String>> entry2:entry.getValue().entrySet()){
-                            if(entry2.getKey()==compare){
-                                for(int i=0;i<entry2.getValue().size();i++){
-                                    box2.add(entry2.getValue().get(i));
+                if (Backend.ActionFlag == 0) {
+                    Backend.ActionFlag = 1;
+                } else {
+                    String compare = (String) objName.getSelectedItem();
+                    for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
+                        for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
+                            if (entry2.getKey() == compare) {
+                                for (int i = 0; i < entry2.getValue().size(); i++) {
+                                    Backend.box2.add(entry2.getValue().get(i));
                                 }
                             }
                         }
                     }
-                    for(String temp:box2){
+                    for (String temp : Backend.box2) {
                         funcName.addItem(temp);
                     }
                 }
@@ -262,14 +212,13 @@ public class UI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 objName1.removeAllItems();
-                if(ActionFlag2==0){
-                    ActionFlag2=1;
-                }
-                else{
-                    String compare=(String) publicFuncName.getSelectedItem();
-                    for(Map.Entry<String,HashMap<String,List<String>>> entry:functionData.entrySet()){
-                        if(entry.getKey()==compare){
-                            for(Map.Entry<String,List<String>> entry2:entry.getValue().entrySet()){
+                if (Backend.ActionFlag2 == 0) {
+                    Backend.ActionFlag2 = 1;
+                } else {
+                    String compare = (String) publicFuncName.getSelectedItem();
+                    for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
+                        if (entry.getKey() == compare) {
+                            for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
                                 objName1.addItem(entry2.getKey());
                             }
                             break;
@@ -282,17 +231,16 @@ public class UI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 funcName1.removeAllItems();
-                if(ActionFlag3==0){
-                    ActionFlag3=1;
-                }
-                else{
-                    String compare1=(String)publicFuncName.getSelectedItem();
-                    String compare2=(String)objName1.getSelectedItem();
-                    for(Map.Entry<String,HashMap<String,List<String>>> entry:functionData.entrySet()){
-                        if(entry.getKey()==compare1){
-                            for(Map.Entry<String,List<String>> entry2:entry.getValue().entrySet()){
-                                if(entry2.getKey()==compare2){
-                                    for(int i=0;i<entry2.getValue().size();i++){
+                if (Backend.ActionFlag3 == 0) {
+                    Backend.ActionFlag3 = 1;
+                } else {
+                    String compare1 = (String) publicFuncName.getSelectedItem();
+                    String compare2 = (String) objName1.getSelectedItem();
+                    for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
+                        if (entry.getKey() == compare1) {
+                            for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
+                                if (entry2.getKey() == compare2) {
+                                    for (int i = 0; i < entry2.getValue().size(); i++) {
                                         funcName1.addItem(entry2.getValue().get(i));
                                     }
                                     break;
@@ -308,211 +256,42 @@ public class UI extends JFrame{
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UIManager.put("OptionPane.minimumSize",new Dimension(300,300));
+                UIManager.put("OptionPane.minimumSize", new Dimension(300, 300));
 
-                DefaultMutableTreeNode root=new DefaultMutableTreeNode("Code Preview");
+                DefaultMutableTreeNode root = new DefaultMutableTreeNode("Code Preview");
 
-                for(Map.Entry<String,HashMap<String,List<String>>> entry:functionData.entrySet()){
-                    DefaultMutableTreeNode row=new DefaultMutableTreeNode(entry.getKey());
-                    for(Map.Entry<String,List<String>> entry2:entry.getValue().entrySet()){
-                        for(int i=0;i<entry2.getValue().size();i++){
-                            DefaultMutableTreeNode node=new DefaultMutableTreeNode(entry2.getValue().get(i));
+                for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
+                    DefaultMutableTreeNode row = new DefaultMutableTreeNode(entry.getKey());
+                    for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
+                        for (int i = 0; i < entry2.getValue().size(); i++) {
+                            DefaultMutableTreeNode node = new DefaultMutableTreeNode(entry2.getValue().get(i));
                             row.add(node);
                         }
                     }
                     root.add(row);
                 }
-                DefaultTreeModel model=new DefaultTreeModel(root);
-                JTree codePreview=new JTree(model);
+                DefaultTreeModel model = new DefaultTreeModel(root);
+                JTree codePreview = new JTree(model);
 
                 Enumeration e1 = root.breadthFirstEnumeration();
-                while(e1.hasMoreElements())
-                {
-                    DefaultMutableTreeNode node = (DefaultMutableTreeNode)e1.nextElement();
-                    if(node.isLeaf()) break;
+                while (e1.hasMoreElements()) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e1.nextElement();
+                    if (node.isLeaf()) break;
                     int row = codePreview.getRowForPath(new TreePath(node.getPath()));
                     codePreview.expandRow(row);
                 }
 
-                JOptionPane.showMessageDialog(mainPanel,"Code Preview:\n");
-                JOptionPane.showMessageDialog(mainPanel,codePreview);
+                JOptionPane.showMessageDialog(mainPanel, "Code Preview:\n");
+                JOptionPane.showMessageDialog(mainPanel, codePreview);
             }
         });
     }
 
-    //Function that parses the code to be tested
+    public void setObjName(String ObjectName){
+        objName.addItem(ObjectName);
+    }
 
-    public void readUsingFileReader(String filePath) throws IOException {
-
-        File file = new File(filePath);
-        FileReader fr = null;
-        try {
-            fileName=file.getName();
-            fr = new FileReader(file);
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(mainPanel,"No such file exists. Enter the file path again");
-        }
-
-        //Reads the file line by line
-        BufferedReader br = new BufferedReader(fr);
-        //Stores the current line of code that was read
-        String line;
-
-        //Creates file that will store the unit test code corresponding to the code to be tested
-        File file1 = new File(fileName+"Tester.java");
-
-        //To write into the unit test code file
-
-        try {
-            // create a new file with name specified
-            // by the file object
-            boolean value = file1.createNewFile();
-
-            if (value) {
-                System.out.println("New Java File is created.");
-                output = new FileWriter(fileName+"Tester.java", true);
-            } else {
-                System.out.println("The file already exists.");
-                output = new FileWriter(fileName+"Tester.java", true);
-                testedBefore = 1;
-                JOptionPane.showMessageDialog(mainPanel,"A unit test for this code already exists. Proceed with Test generation.");
-            }
-
-        } catch (Exception e) {
-            e.getStackTrace();
-        }
-
-        while (true) {
-            try {
-                if (!((line = br.readLine()) != null)) break;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            //This is where the actual parsing happens
-            //Every line of code will be parsed to identify the tokens present in it
-
-            //Line read was an import statement
-            //Copy the import to the unit test file
-
-            if (testedBefore == 0 && line.contains("import")) {
-
-                output.write(line);
-                output.write("\n");
-            }
-
-            //Detects the class which is being tested
-            else if (testedBefore == 0 && line.contains("public class")) {
-                //System.out.println("Hi in pc");
-                //Importing the additional dependencies here (as to be imported only once)
-                output.write("import static org.junit.Assert.assertEquals;\n");
-                output.write("import static org.junit.Assert.assertFalse;\n");
-                output.write("import static org.junit.Assert.assertNotNull;\n");
-                output.write("import static org.junit.Assert.assertTrue;\n");
-                output.write("import org.junit.Before;\n");
-                output.write("import org.junit.Rule;\n");
-                output.write("import org.junit.Test;\n");
-                output.write("import org.junit.mockito2.*;\n");
-                output.write("import static org.mockito2.Mockito.mock;\n");
-                output.write("import static org.mockito2.Mockito.spy;\n");
-                output.write("import static org.mockito2.Mockito.when;\n");
-                output.write("import static org.mockito2.Mockito.doNothing;\n");
-                output.write("\n");
-
-                //Declares the public class which will hold the mocks and tests in the unit test code file
-                output.write("public class "+fileName+"Tester{\n\n");
-
-                //@InjectMocks creates class instances which need to be tested in the test class
-                output.write("@InjectMocks\n");
-
-                //Logic to extract class name (Assumes starts with public class)
-                int i = line.indexOf("public class") + 13;
-                String temp = "";
-                while (i < line.length()) {
-                    if (line.charAt(i) == '{' || line.charAt(i) == ' ') {
-                        break;
-                    }
-                    temp += line.charAt(i);
-                    i++;
-                }
-                nameOfClassBeingTested = temp;
-                output.write(temp + " " + temp.toLowerCase() + ";\n\n");
-            }
-            //Public function has been detected in the line
-            else if (line.contains("throws") && line.contains("public")) {
-
-                //Logic to extract function name
-                int index = line.indexOf("public") + 7;
-                int flag = 0;
-
-                while (flag != 1) {
-                    if (line.charAt(index) == ' ') {
-                        flag = 1;
-                    }
-                    index++;
-                }
-
-                String functionName = line.substring(index, line.indexOf(')') + 1);
-                HashMap<String, List<String>> temp = new LinkedHashMap<>();
-                functionData.put(functionName, temp);
-                functionsToBeTested.add(functionName);
-                currFunction = functionName;
-            } else if (line.contains("@Autowired")) {
-                autowiredFlag = 1;
-            } else if (autowiredFlag == 1) {
-                String objName="";
-                if(line.contains("private")){
-                    String temp = line.substring(line.indexOf("private") + 8, line.indexOf(";")); //Abc abc
-                    objName = temp.substring(temp.indexOf(" ") + 1);
-                }
-                else if(line.contains("protected")){
-                    String temp = line.substring(line.indexOf("protected") + 10, line.indexOf(";")); //Abc abc
-                    objName = temp.substring(temp.indexOf(" ") + 1);
-                }
-                if(!objName.equals(""))
-                    autowiredObjectList.add(objName);
-                autowiredFlag = 0;
-            } else {
-                for (String s : autowiredObjectList) {
-                    if (line.contains(s + ".")) {
-                        int startIndex = line.indexOf(s);
-                        int endIndex = startIndex + 1;
-                        while (endIndex < line.length()) {
-                            if (line.charAt(endIndex) == '(') {
-                                endIndex++;
-                                break;
-                            }
-                            endIndex++;
-                        }
-
-                        if (!functionData.get(currFunction).containsKey(s)) {
-                            List<String> temp = new ArrayList<>();
-                            temp.add(line.substring(startIndex, endIndex) + ")");
-                            functionData.get(currFunction).put(s, temp);
-                        } else {
-                            functionData.get(currFunction).get(s).add(line.substring(startIndex, endIndex) + ")");
-                        }
-                        line = line.trim();
-                        List<String> temp1 = Arrays.asList(line.split(" "));
-                        String startWord = temp1.get(0);
-                        //Not returning a value
-                        if (startWord.contains(".")) {
-                            continue;
-                        }
-                        break;
-                    }
-                }
-            }
-            numKeys = functionData.size();
-        }
-
-        if (testedBefore == 0) {
-            //Generating @Mocks in the file
-            for (String s : autowiredObjectList) {
-                output.write("@Mock\n");
-                output.write(s + " mock" + s + ";\n\n");
-                objName.addItem(s);
-            }
-        }
+    public void showMessage(String message){
+        JOptionPane.showMessageDialog(mainPanel,message);
     }
 }

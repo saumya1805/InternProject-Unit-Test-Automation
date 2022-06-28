@@ -1,5 +1,3 @@
-package ui.activities.impl.plugins.navigation.commands;
-
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
