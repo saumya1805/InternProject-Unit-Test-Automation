@@ -23,13 +23,13 @@ import platform.monitoring.eventlogfile.udd.EventLogFileUploadStatus;
 
 @Service
 @Lazy
-public class EventLogFileAppendUploader {
+public Abstract class EventLogFileAppendUploader {
 
         @Autowired
-        private EventLogFileAnalyticsLogger logger;
+        protected EventLogFileAnalyticsLogger logger;
 
         @Autowired
-        private EventLogFileAnalyticsLogMessageGenerator messageGenerator;
+        public EventLogFileAnalyticsLogMessageGenerator messageGenerator;
 
         @Autowired
         private EventLogFileAnalyticsPermChecker permChecker;

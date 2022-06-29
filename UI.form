@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="UI">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="15" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="16" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
       <xy x="19" y="20" width="1254" height="929"/>
     </constraints>
     <properties>
-      <background color="-5263973"/>
+      <background color="-13750738"/>
     </properties>
     <border type="none"/>
     <children>
       <component id="9ac6f" class="javax.swing.JLabel">
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="2" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font name="Menlo" size="28" style="1"/>
-          <foreground color="-4500681"/>
-          <icon value="icons/tool.png"/>
+          <font name="Menlo" size="36" style="1"/>
+          <foreground color="-16745780"/>
           <iconTextGap value="15"/>
           <text value="Unit Test Template Generator"/>
         </properties>
@@ -31,7 +30,7 @@
           </grid>
         </constraints>
         <properties>
-          <background color="-9463906"/>
+          <background color="-11052711"/>
           <font name="Menlo" size="16" style="0"/>
           <foreground color="-592138"/>
           <margin top="2" left="6" bottom="2" right="6"/>
@@ -49,7 +48,7 @@
         <properties>
           <background color="-12828863"/>
           <font name="Menlo" size="16" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <icon value="icons/done.png"/>
           <iconTextGap value="15"/>
           <text value="Choose File"/>
@@ -57,11 +56,11 @@
       </component>
       <component id="2d2eb" class="javax.swing.JLabel" binding="setup">
         <constraints>
-          <grid row="4" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Menlo" size="24" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <horizontalTextPosition value="10"/>
           <icon value="icons/info.png"/>
           <iconTextGap value="10"/>
@@ -70,7 +69,7 @@
       </component>
       <component id="a1c4c" class="javax.swing.JComboBox" binding="objName">
         <constraints>
-          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="350" height="50"/>
             <preferred-size width="350" height="50"/>
             <maximum-size width="350" height="50"/>
@@ -85,19 +84,22 @@
           <selectedIndex value="-1"/>
         </properties>
       </component>
-      <component id="aeee9" class="javax.swing.JLabel">
+      <component id="aeee9" class="javax.swing.JLabel" binding="codepreview">
         <constraints>
-          <grid row="3" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Menlo" size="24" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
+          <horizontalTextPosition value="10"/>
+          <icon value="icons/view.png"/>
+          <iconTextGap value="10"/>
           <text value="Code Preview"/>
         </properties>
       </component>
       <component id="890d4" class="javax.swing.JButton" binding="addToTextAreaButton" default-binding="true">
         <constraints>
-          <grid row="5" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+          <grid row="6" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="200" height="50"/>
             <preferred-size width="200" height="50"/>
             <maximum-size width="200" height="50"/>
@@ -105,7 +107,7 @@
         </constraints>
         <properties>
           <font name="Menlo" size="14" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <icon value="icons/plus.png"/>
           <iconTextGap value="10"/>
           <text value="Add to text area"/>
@@ -113,11 +115,11 @@
       </component>
       <component id="58940" class="javax.swing.JLabel" binding="testGen">
         <constraints>
-          <grid row="6" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Menlo" size="24" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <horizontalTextPosition value="10"/>
           <icon value="icons/info.png"/>
           <iconTextGap value="10"/>
@@ -126,7 +128,7 @@
       </component>
       <component id="5fa56" class="javax.swing.JButton" binding="addToTextAreaButton3" default-binding="true">
         <constraints>
-          <grid row="7" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+          <grid row="8" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="200" height="50"/>
             <preferred-size width="200" height="50"/>
             <maximum-size width="200" height="50"/>
@@ -134,7 +136,7 @@
         </constraints>
         <properties>
           <font name="Menlo" size="14" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <icon value="icons/plus.png"/>
           <iconTextGap value="10"/>
           <text value="Add to text area"/>
@@ -142,7 +144,7 @@
       </component>
       <component id="d86fd" class="javax.swing.JComboBox" binding="publicFuncName">
         <constraints>
-          <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="350" height="50"/>
             <preferred-size width="350" height="50"/>
             <maximum-size width="350" height="50"/>
@@ -157,21 +159,21 @@
       </component>
       <component id="64794" class="javax.swing.JTextField" binding="custFuncName">
         <constraints>
-          <grid row="7" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="8" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="350" height="50"/>
             <preferred-size width="350" height="50"/>
             <maximum-size width="350" height="50"/>
           </grid>
         </constraints>
         <properties>
-          <background color="-9463906"/>
+          <background color="-11052711"/>
           <font name="Menlo" size="14" style="0"/>
           <foreground color="-1"/>
         </properties>
       </component>
       <component id="79d2e" class="javax.swing.JComboBox" binding="objName1">
         <constraints>
-          <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="9" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="350" height="50"/>
             <preferred-size width="350" height="50"/>
             <maximum-size width="350" height="50"/>
@@ -184,7 +186,7 @@
       </component>
       <component id="9d039" class="javax.swing.JComboBox" binding="funcName1">
         <constraints>
-          <grid row="8" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="9" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="350" height="50"/>
             <preferred-size width="350" height="50"/>
             <maximum-size width="350" height="50"/>
@@ -198,28 +200,12 @@
       </component>
       <hspacer id="930d5">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
-      <component id="bbe2b" class="javax.swing.JTextArea" binding="customizationSpace">
-        <constraints>
-          <grid row="11" column="2" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="8" fill="2" indent="0" use-parent-layout="false">
-            <minimum-size width="750" height="300"/>
-            <preferred-size width="750" height="300"/>
-            <maximum-size width="750" height="300"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-9463906"/>
-          <font name="Menlo" size="16" style="0"/>
-          <foreground color="-592138"/>
-          <margin top="10" left="10" bottom="10" right="10"/>
-          <text value="Customization space..."/>
-        </properties>
-      </component>
       <component id="a6fa3" class="javax.swing.JButton" binding="AddToUnitTestButton">
         <constraints>
-          <grid row="11" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+          <grid row="12" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="200" height="50"/>
             <preferred-size width="200" height="50"/>
             <maximum-size width="200" height="50"/>
@@ -227,14 +213,14 @@
         </constraints>
         <properties>
           <font name="Menlo" size="14" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <icon value="icons/done.png"/>
           <text value="Submit to unit test"/>
         </properties>
       </component>
       <component id="6a977" class="javax.swing.JButton" binding="cancelButton" default-binding="true">
         <constraints>
-          <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+          <grid row="13" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="200" height="50"/>
             <preferred-size width="200" height="50"/>
             <maximum-size width="200" height="50"/>
@@ -242,7 +228,7 @@
         </constraints>
         <properties>
           <font name="Menlo" size="14" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <icon value="icons/cancel.png"/>
           <iconTextGap value="20"/>
           <text value="Cancel"/>
@@ -250,7 +236,7 @@
       </component>
       <component id="cc252" class="javax.swing.JButton" binding="generateTestButton" default-binding="true">
         <constraints>
-          <grid row="12" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+          <grid row="13" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="200" height="50"/>
             <preferred-size width="200" height="50"/>
             <maximum-size width="200" height="50"/>
@@ -258,7 +244,7 @@
         </constraints>
         <properties>
           <font name="Menlo" size="14" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <icon value="icons/done.png"/>
           <iconTextGap value="15"/>
           <text value="Generate test"/>
@@ -266,11 +252,11 @@
       </component>
       <component id="1ab83" class="javax.swing.JLabel" binding="assertGen">
         <constraints>
-          <grid row="9" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="10" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Menlo" size="24" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <horizontalTextPosition value="10"/>
           <icon value="icons/info.png"/>
           <iconTextGap value="10"/>
@@ -279,10 +265,10 @@
       </component>
       <component id="2bb2d" class="javax.swing.JComboBox" binding="assertsList">
         <constraints>
-          <grid row="10" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="750" height="50"/>
-            <preferred-size width="750" height="50"/>
-            <maximum-size width="750" height="50"/>
+          <grid row="11" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="790" height="50"/>
+            <preferred-size width="790" height="50"/>
+            <maximum-size width="790" height="50"/>
           </grid>
         </constraints>
         <properties>
@@ -312,7 +298,7 @@
       </component>
       <component id="e8e28" class="javax.swing.JButton" binding="addToTextAreaButton2" default-binding="true">
         <constraints>
-          <grid row="10" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+          <grid row="11" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="200" height="50"/>
             <preferred-size width="200" height="50"/>
             <maximum-size width="200" height="50"/>
@@ -320,7 +306,7 @@
         </constraints>
         <properties>
           <font name="Menlo" size="14" style="1"/>
-          <foreground color="-4500681"/>
+          <foreground color="-16745780"/>
           <icon value="icons/plus.png"/>
           <iconTextGap value="10"/>
           <text value="Add to text area"/>
@@ -328,12 +314,12 @@
       </component>
       <hspacer id="594fc">
         <constraints>
-          <grid row="8" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="9" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
       <component id="54a9c" class="javax.swing.JComboBox" binding="funcName">
         <constraints>
-          <grid row="5" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="6" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="350" height="50"/>
             <preferred-size width="350" height="50"/>
             <maximum-size width="350" height="50"/>
@@ -350,34 +336,45 @@
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
-      <vspacer id="560a1">
+      <scrollpane id="2e23c">
         <constraints>
-          <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="12" column="2" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-      </vspacer>
-      <vspacer id="b9504">
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="bbe2b" class="javax.swing.JTextArea" binding="customizationSpace">
+            <constraints/>
+            <properties>
+              <background color="-11052711"/>
+              <font name="Menlo" size="16" style="0"/>
+              <foreground color="-592138"/>
+              <margin top="10" left="10" bottom="10" right="10"/>
+              <text value="Customization space..."/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <hspacer id="4efb">
         <constraints>
-          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
-      </vspacer>
-      <vspacer id="51cd9">
+      </hspacer>
+      <hspacer id="14618">
         <constraints>
-          <grid row="13" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
-      </vspacer>
-      <component id="4afd3" class="javax.swing.JButton" binding="button1" default-binding="true">
+      </hspacer>
+      <hspacer id="38c47">
         <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <minimum-size width="75" height="50"/>
-            <preferred-size width="75" height="50"/>
-            <maximum-size width="75" height="50"/>
-          </grid>
+          <grid row="15" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <icon value="icons/search.png"/>
-          <text value=""/>
-        </properties>
-      </component>
+      </hspacer>
+      <hspacer id="60587">
+        <constraints>
+          <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
     </children>
   </grid>
 </form>

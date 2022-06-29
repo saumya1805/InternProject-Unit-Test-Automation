@@ -129,37 +129,7 @@ public class TaskCreateNavigationCommand implements NavigationCommand {
           return permAndPrefUtil.isEnabled(ActivitiesAccessCheck.ORG_HIDES_TASK_LIST_VIEWS);
       }
 
-      /**
-       * Setter for the navigationEventProvider attribute. <b>This should only be used in a test setting.</b>
-       */
-      protected void setNavigationEventProvider(NavigationEventProvider navigationEventProvider) {
-          this.navigationEventProvider = navigationEventProvider;
-      }
 
-      /**
-       * Setter for the TaskDao attribute. <b>This should only be used in a test setting.</b>
-       */
-      protected void setTaskDao(TaskDao taskDao) {
-          this.taskDao = taskDao;
-      }
-
-      /**
-       * Setter for the navigationEventProvider attribute. <b>This should only be used in a test setting.</b>
-       */
-      protected void setTaskHelper(TaskHelper taskHelper) {
-          this.taskHelper = taskHelper;
-      }
-
-      /**
-       * Setter for the listViewService attribute. <b>This should only be used in a test setting.</b>
-       */
-      protected void setListViewService(ListViewService listViewService) {
-          this.listViewService = listViewService;
-      }
-
-      /**
-       * Setter for the recordUtils attribute. <b>This should only be used in a test setting.</b>
-      */
       protected void setRecordUtils(RecordUtils recordUtils) {
           this.recordUtils = recordUtils;
       }

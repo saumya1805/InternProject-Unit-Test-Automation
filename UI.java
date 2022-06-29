@@ -1,10 +1,16 @@
+//This class implements the UI for the Unit Test Template Generator
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -32,26 +38,19 @@ public class UI extends JFrame {
     private JButton generateTestButton;
     private JComboBox assertsList;
     private JButton addToTextAreaButton2;
-    private JButton button1;
     private JLabel setup;
     private JLabel testGen;
     private JLabel assertGen;
+    private JLabel codepreview;
 
     DefaultTableModel model;
 
-    UI() throws IOException {
+    UI() throws IOException, FontFormatException {
 
         add(mainPanel);
-        setSize(1200, 1500);
-        Color color = new Color(111, 151, 158);
+        setSize(1200, 1600);
+        Color color = new Color(87, 89, 89);
         Color color2 = new Color(246, 246, 246);
-
-        objName.setUI(new MetalComboBoxUI());
-        publicFuncName.setUI(new MetalComboBoxUI());
-        objName1.setUI(new MetalComboBoxUI());
-        funcName.setUI(new MetalComboBoxUI());
-        funcName1.setUI(new MetalComboBoxUI());
-        assertsList.setUI(new MetalComboBoxUI());
 
         objName.setEditable(true);
         objName.getEditor().getEditorComponent().setBackground(color);
@@ -89,6 +88,7 @@ public class UI extends JFrame {
         assertsList.getEditor().getEditorComponent().setForeground(color2);
         assertsList.getEditor().getEditorComponent().setFont(f);
 
+        //Starts file parsing
         chooseFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -104,6 +104,8 @@ public class UI extends JFrame {
                 }
             }
         });
+
+        //Adds setup section code to the customization text area
         addToTextAreaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -118,6 +120,8 @@ public class UI extends JFrame {
                 customizationSpace.append("when(" + functionName + ").thenReturn();\n");
             }
         });
+
+        //Adds Test function code to the customization text area
         addToTextAreaButton3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -143,6 +147,8 @@ public class UI extends JFrame {
                 }
             }
         });
+
+        //Adds asserts to the Customization text area
         addToTextAreaButton2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -150,6 +156,8 @@ public class UI extends JFrame {
                 customizationSpace.append(asserts + "\n");
             }
         });
+
+        //Adds the code i the customization text area to the unit test code
         AddToUnitTestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -166,12 +174,16 @@ public class UI extends JFrame {
                 customizationSpace.setText("Customization Space...");
             }
         });
+
+        //Terminates unit test generation
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
             }
         });
+
+        //To complete unit test generation
         generateTestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -184,6 +196,7 @@ public class UI extends JFrame {
                 }
             }
         });
+        //Adds corresponding functions being called to the 'function name dropdown' of the setup section
         objName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -253,12 +266,12 @@ public class UI extends JFrame {
             }
         });
 
-        button1.addActionListener(new ActionListener() {
+        /*button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UIManager.put("OptionPane.minimumSize", new Dimension(300, 300));
 
-                DefaultMutableTreeNode root = new DefaultMutableTreeNode("Code Preview");
+                DefaultMutableTreeNode root = new DefaultMutableTreeNode(Backend.nameOfClassBeingTested);
 
                 for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
                     DefaultMutableTreeNode row = new DefaultMutableTreeNode(entry.getKey());
@@ -281,7 +294,39 @@ public class UI extends JFrame {
                     codePreview.expandRow(row);
                 }
 
-                JOptionPane.showMessageDialog(mainPanel, "Code Preview:\n");
+                JOptionPane.showMessageDialog(mainPanel, "Code Preview\n");
+                JOptionPane.showMessageDialog(mainPanel, codePreview);
+            }
+        });*/
+        codepreview.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                UIManager.put("OptionPane.minimumSize", new Dimension(300, 300));
+
+                DefaultMutableTreeNode root = new DefaultMutableTreeNode(Backend.nameOfClassBeingTested);
+
+                for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
+                    DefaultMutableTreeNode row = new DefaultMutableTreeNode(entry.getKey());
+                    for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
+                        for (int i = 0; i < entry2.getValue().size(); i++) {
+                            DefaultMutableTreeNode node = new DefaultMutableTreeNode(entry2.getValue().get(i));
+                            row.add(node);
+                        }
+                    }
+                    root.add(row);
+                }
+                DefaultTreeModel model = new DefaultTreeModel(root);
+                JTree codePreview = new JTree(model);
+
+                Enumeration e1 = root.breadthFirstEnumeration();
+                while (e1.hasMoreElements()) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e1.nextElement();
+                    if (node.isLeaf()) break;
+                    int row = codePreview.getRowForPath(new TreePath(node.getPath()));
+                    codePreview.expandRow(row);
+                }
+
+                JOptionPane.showMessageDialog(mainPanel, "Code Preview\n");
                 JOptionPane.showMessageDialog(mainPanel, codePreview);
             }
         });

@@ -1,3 +1,4 @@
+//This class is to implement the Backend logic for the Unit Test Template Generator
 import java.io.*;
 import java.util.*;
 
@@ -7,7 +8,6 @@ public class Backend {
     public static String fileName;
 
     public static Set<String> box2 = new HashSet<>();
-
 
     //Used to write into the unit test file
     static FileWriter output;
