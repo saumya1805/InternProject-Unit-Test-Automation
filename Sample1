@@ -70,7 +70,7 @@ private ObjectService objectService;
 @Autowired
 private PermAndPrefUtil permAndPrefUtil;
 
-public boolean HasLinkedEntityRecordsForRecordId(String recordId,String linkedEntity,String lookupFieldOnLinkedEntity) throws ServiceException{
+public boolean HasLinkedEntityRecordsForRecordId(String recordId,String linkedEntity,String lookupFieldOnLinkedEntity){
 
     if (recordId == null || recordId.isEmpty()) {
                     return false;
@@ -141,11 +141,8 @@ public List<StandardEntitiesBase> GetWhiteListedEntities() throws ServiceExcepti
 
                 // Get ContentDocumentLink record to delete
                 RecordInfo contentDocLinkRecordInfo = recordUtils.getRecordInfoByApiName(StandardEntitiesC.ContentDocumentLink.getApiName());
-                WhereCondition whereCondition = Condition.equalTo(ContentDocumentLinkStandardFields.LinkedEntityId.getName(),
-                        documentChecklistItemId);
-                List<Record> contentDocLinkRecords = recordService.loadRecords(contentDocLinkRecordInfo, Mode.VIEW,
-                        CONTENT_DOC_LINK_QUERY_FIELDS, whereCondition, null, Integer.valueOf(1), null, false,
-                        SoqlOptions.DONOT_ESCAPE_QUOTES_IN_IN);
+                WhereCondition whereCondition = Condition.equalTo(ContentDocumentLinkStandardFields.LinkedEntityId.getName(),documentChecklistItemId);
+                List<Record> contentDocLinkRecords = recordService.loadRecords(contentDocLinkRecordInfo, Mode.VIEW,CONTENT_DOC_LINK_QUERY_FIELDS, whereCondition, null, Integer.valueOf(1), null, false,SoqlOptions.DONOT_ESCAPE_QUOTES_IN_IN);
 
                 // Remove received document and delete content document link
                 if (documentChecklistItems != null && documentChecklistItems.size() == 1) {
@@ -155,21 +152,17 @@ public List<StandardEntitiesBase> GetWhiteListedEntities() throws ServiceExcepti
                         Record dciRecord = documentChecklistItems.get(0);
                         dciRecord.put(DocumentChecklistItemStandardFields.ReceivedDocumentId.getName(), "");
 
-                        CompositeRecordOperationBuilder builder = compositeRecordService.createBuilder(AppVersion.CURRENT,
-                                true);
+                        CompositeRecordOperationBuilder builder = compositeRecordService.createBuilder(AppVersion.CURRENT,true);
                         builder.update(dciRecord);
-                        builder.delete(contentDocLinkRecords.get(0).getId(), contentDocLinkRecords.get(0).getApiName(),
-                                AppVersion.CURRENT);
+                        builder.delete(contentDocLinkRecords.get(0).getId(), contentDocLinkRecords.get(0).getApiName(),AppVersion.CURRENT);
                         final List<CompositeOperationResult> compositeResults = compositeRecordService.execute(builder);
-                        if (compositeResults != null && compositeResults.size() == 2 && compositeResults.get(0).isSuccess()
-                                && compositeResults.get(1).isSuccess()) {
+                        if (compositeResults != null && compositeResults.size() == 2 && compositeResults.get(0).isSuccess() && compositeResults.get(1).isSuccess()) {
                             removedState = "SUCCESS";
                         }
                     }
                 } else {
                     ValidationException validationException = new ValidationException(labelService.getLabel("Errors", "UnhandledExceptionError"));
-                    gackUtil.sendLoggingOnlyGack("No DCI with Id " + documentChecklistItemId + " found",
-                            validationException.getMessage(), validationException);
+                    gackUtil.sendLoggingOnlyGack("No DCI with Id " + documentChecklistItemId + " found",validationException.getMessage(), validationException);
                 }
 
                 return removedState;
@@ -189,8 +182,7 @@ public List<StandardEntitiesBase> GetWhiteListedEntities() throws ServiceExcepti
 
                     if (records != null && !records.isEmpty()) {
                         records.forEach(record -> {
-                            List<String> pages = parseTransformationInfo(
-                                    record.get(DocumentChecklistItemStandardFields.TransformationInfo.getName()));
+                            List<String> pages = parseTransformationInfo(record.get(DocumentChecklistItemStandardFields.TransformationInfo.getName()));
                             if (pages != null) {
                                 transformedPages.addAll(pages);
                             }

@@ -7,7 +7,8 @@ public class Backend {
     //Stores the name of the file being tested. Used to check if a unit test already exists for the file and naming the unit test file.
     public static String fileName;
 
-    public static Set<String> box2 = new HashSet<>();
+    //Hashset to store the items of funcNameSetup drop down list. Hashset was used since non-duplicate entries were needed
+    public static Set<String> funcNameSetupItems = new HashSet<>();
 
     //Used to write into the unit test file
     static FileWriter output;
@@ -21,11 +22,11 @@ public class Backend {
     //The absolute filepath taken as input from the user via the Java Swing GUI
     public static String inputFilePath;
 
+    //Vector storing the autowired objects
     public static Vector<String> autowiredObjectList = new Vector<>();
 
     //Hashmap storing information about the public functions being declared in a class, what external objects these functions use and what functions do these external objects call
     public static HashMap<String, HashMap<String, List<String>>> functionData = new LinkedHashMap();
-
 
     //Flag for registering that previous line had an @Autowired object
     public static int autowiredFlag = 0;
@@ -138,6 +139,10 @@ public class Backend {
                 int i = line.indexOf("class") + 6;
                 String temp = "";
                 while (i < line.length()) {
+                    if(temp.equals("") && line.charAt(i)==' '){
+                        i++;
+                        continue;
+                    }
                     if (line.charAt(i) == '{' || line.charAt(i) == ' ') {
                         break;
                     }
@@ -148,12 +153,13 @@ public class Backend {
                 output.write(temp + " " + temp.toLowerCase() + ";\n\n");
             }
             //Public function has been detected in the line
-            else if (line.contains("throws") && line.contains("public") || line.contains("(") && line.contains("public")) {
+            else if ((line.contains("throws") && line.contains("public")) || (line.contains("(") && line.contains("public") && !line.contains("new"))) {
 
                 //Logic to extract function name
                 int index = line.indexOf("public") + 7;
                 int flag = 0;
 
+                //Return type of the function
                 while (flag != 1) {
                     if (line.charAt(index) == ' ') {
                         flag = 1;
@@ -161,6 +167,7 @@ public class Backend {
                     index++;
                 }
 
+                //Function name
                 String functionName = line.substring(index, line.indexOf(')') + 1);
                 HashMap<String, List<String>> temp = new LinkedHashMap<>();
                 functionData.put(functionName, temp);
@@ -215,8 +222,9 @@ public class Backend {
             }
         }
 
+        //Adds mocks in the unit test file.
         if (testedBefore == 0) {
-            //Generating @Mocks in the file
+            //Generating @Mocks in the unit test file
             for (String s : autowiredObjectList) {
                 output.write("@Mock\n");
                 output.write(s + " mock" + s + ";\n\n");

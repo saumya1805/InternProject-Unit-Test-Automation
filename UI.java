@@ -1,8 +1,5 @@
 //This class implements the UI for the Unit Test Template Generator
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -10,11 +7,9 @@ import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -22,28 +17,56 @@ import java.util.List;
 
 public class UI extends JFrame {
     private JPanel mainPanel;
+
+    //Text field that accepts the file path as input
     private JTextField filePath;
+
+    //Button when pressed, file is selected and parsing is initiated
     private JButton chooseFileButton;
-    private JComboBox objName;
-    private JButton addToTextAreaButton;
-    private JComboBox funcName;
-    private JButton addToTextAreaButton3;
-    private JTextField custFuncName;
+
+    //Drop down list consisting of all the object names (used in the setup section)
+    private JComboBox objNameSetup;
+
+    //Drop down list consisting of the functions called by the object selected in the objNameSetup drop down list.
+    private JComboBox funcNameSetup;
+
+    //Drop down list consisting of all the public functions being declared in the class to be tested.
     private JComboBox publicFuncName;
-    private JComboBox objName1;
-    private JComboBox funcName1;
-    private JTextArea customizationSpace;
-    private JButton AddToUnitTestButton;
-    private JButton cancelButton;
-    private JButton generateTestButton;
+
+    //Field accepting the custom function name provided by the user
+    private JTextField custFuncName;
+
+    //Drop down list consisting of the objects being referenced in the public function selected in publicFuncName drop down list.
+    private JComboBox objNameTestGen;
+
+    //Drop down list consisting of the functions being called by the object selected in the objNameTestGen drop down list.
+    private JComboBox funcNameTestGen;
+
+    //Buttons used to add the input fields' data (drop down list selected item and text field inputs) to the customization text area
+    private JButton addToTextAreaButton;
+    private JButton addToTextAreaButtonTestAssert;
+    private JButton addToTextAreaButtonTestGen;
+
+    //Drop down list displaying the various assert statements that can be inserted by the user in the code.
     private JComboBox assertsList;
-    private JButton addToTextAreaButton2;
+
+    // A rich text area used to by the user to add customizations to the test code
+    private JTextArea customizationSpace;
+
+    //Button to write the data in the customization space to the unit test code.
+    private JButton AddToUnitTestButtonSetup;
+
+    //Button to exit the application.
+    private JButton cancelButton;
+
+    //Button to complete unit test generation
+    private JButton generateTestButton;
+
+    //Labels used to label the various sections of the UI.
     private JLabel setup;
     private JLabel testGen;
     private JLabel assertGen;
     private JLabel codepreview;
-
-    DefaultTableModel model;
 
     UI() throws IOException, FontFormatException {
 
@@ -52,20 +75,20 @@ public class UI extends JFrame {
         Color color = new Color(87, 89, 89);
         Color color2 = new Color(246, 246, 246);
 
-        objName.setEditable(true);
-        objName.getEditor().getEditorComponent().setBackground(color);
-        objName.getEditor().getEditorComponent().setForeground(color2);
+        objNameSetup.setEditable(true);
+        objNameSetup.getEditor().getEditorComponent().setBackground(color);
+        objNameSetup.getEditor().getEditorComponent().setForeground(color2);
         Font f = new Font("Menlo", 0, 16);
-        objName.getEditor().getEditorComponent().setFont(f);
+        objNameSetup.getEditor().getEditorComponent().setFont(f);
 
         setup.setToolTipText("<html>Choose the object name and function name<br>and click the <b>Add to Text Area</b> button following<br>which you can add the parameters and return<br>value. Do this for each setup statement<br>you wish to add and once done click the<br><b>Add to unit test</b> button beside<br>the text area.</html>");
         testGen.setToolTipText("<html>Choose the function for which you<br>wish to create a test function<br>and fill in a unique function name.<br>Choose the object and external function you<br>require and click <b>Add to text area</b> for<br>each. Customize in the text area<br> and once done click the <b>Add to unit test</b><br>button</html>");
         assertGen.setToolTipText("<html>Select the assert function you wish to insert<br>and click the <b>Add to Text Area</b><br>button. Add the parameters in the text area<br> and once done click the <b>Add to unit test</b><br>button</html>");
 
-        funcName.setEditable(true);
-        funcName.getEditor().getEditorComponent().setBackground(color);
-        funcName.getEditor().getEditorComponent().setForeground(color2);
-        funcName.getEditor().getEditorComponent().setFont(f);
+        funcNameSetup.setEditable(true);
+        funcNameSetup.getEditor().getEditorComponent().setBackground(color);
+        funcNameSetup.getEditor().getEditorComponent().setForeground(color2);
+        funcNameSetup.getEditor().getEditorComponent().setFont(f);
 
         publicFuncName.setEditable(true);
         publicFuncName.getEditor().getEditorComponent().setBackground(color);
@@ -73,15 +96,15 @@ public class UI extends JFrame {
         publicFuncName.setBorder(null);
         publicFuncName.getEditor().getEditorComponent().setFont(f);
 
-        objName1.setEditable(true);
-        objName1.getEditor().getEditorComponent().setBackground(color);
-        objName1.getEditor().getEditorComponent().setForeground(color2);
-        objName1.getEditor().getEditorComponent().setFont(f);
+        objNameTestGen.setEditable(true);
+        objNameTestGen.getEditor().getEditorComponent().setBackground(color);
+        objNameTestGen.getEditor().getEditorComponent().setForeground(color2);
+        objNameTestGen.getEditor().getEditorComponent().setFont(f);
 
-        funcName1.setEditable(true);
-        funcName1.getEditor().getEditorComponent().setBackground(color);
-        funcName1.getEditor().getEditorComponent().setForeground(color2);
-        funcName1.getEditor().getEditorComponent().setFont(f);
+        funcNameTestGen.setEditable(true);
+        funcNameTestGen.getEditor().getEditorComponent().setBackground(color);
+        funcNameTestGen.getEditor().getEditorComponent().setForeground(color2);
+        funcNameTestGen.getEditor().getEditorComponent().setFont(f);
 
         assertsList.setEditable(true);
         assertsList.getEditor().getEditorComponent().setBackground(color);
@@ -105,7 +128,7 @@ public class UI extends JFrame {
             }
         });
 
-        //Adds setup section code to the customization text area
+        //Adds Setup section code to the customization text area
         addToTextAreaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -115,14 +138,14 @@ public class UI extends JFrame {
                     customizationSpace.append("MockitoAnnotations.initMocks(this);\n");
                     Backend.addFlag = 1;
                 }
-                String objectName = (String) objName.getSelectedItem();
-                String functionName = (String) funcName.getSelectedItem();
+                String objectName = (String) objNameSetup.getSelectedItem();
+                String functionName = (String) funcNameSetup.getSelectedItem();
                 customizationSpace.append("when(" + functionName + ").thenReturn();\n");
             }
         });
 
         //Adds Test function code to the customization text area
-        addToTextAreaButton3.addActionListener(new ActionListener() {
+        addToTextAreaButtonTestGen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String publicFunctionName = (String) publicFuncName.getSelectedItem();
@@ -138,8 +161,8 @@ public class UI extends JFrame {
                             customizationSpace.append("public void " + functionName + "{\n");
                             Backend.addFlag = 1;
                         }
-                        String objectName = (String) objName1.getSelectedItem();
-                        String functionName1 = (String) funcName1.getSelectedItem();
+                        String objectName = (String) objNameTestGen.getSelectedItem();
+                        String functionName1 = (String) funcNameTestGen.getSelectedItem();
                         customizationSpace.append("when(" + functionName1 + ").thenReturn();\n");
                     }
                 } catch (IOException ex) {
@@ -149,7 +172,7 @@ public class UI extends JFrame {
         });
 
         //Adds asserts to the Customization text area
-        addToTextAreaButton2.addActionListener(new ActionListener() {
+        addToTextAreaButtonTestAssert.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String asserts = (String) assertsList.getSelectedItem();
@@ -157,8 +180,8 @@ public class UI extends JFrame {
             }
         });
 
-        //Adds the code i the customization text area to the unit test code
-        AddToUnitTestButton.addActionListener(new ActionListener() {
+        //Adds the code in the customization text area to the unit test code
+        AddToUnitTestButtonSetup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Backend.addFlag = 0;
@@ -197,34 +220,36 @@ public class UI extends JFrame {
             }
         });
         //Adds corresponding functions being called to the 'function name dropdown' of the setup section
-        objName.addActionListener(new ActionListener() {
+        objNameSetup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                funcName.removeAllItems();
+                funcNameSetup.removeAllItems();
                 if (Backend.ActionFlag == 0) {
                     Backend.ActionFlag = 1;
                 } else {
-                    String compare = (String) objName.getSelectedItem();
+                    String compare = (String) objNameSetup.getSelectedItem();
                     for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
                         for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
                             if (entry2.getKey() == compare) {
                                 for (int i = 0; i < entry2.getValue().size(); i++) {
-                                    Backend.box2.add(entry2.getValue().get(i));
+                                    Backend.funcNameSetupItems.add(entry2.getValue().get(i));
                                 }
                             }
                         }
                     }
-                    for (String temp : Backend.box2) {
-                        funcName.addItem(temp);
+                    for (String temp : Backend.funcNameSetupItems) {
+                        funcNameSetup.addItem(temp);
                     }
                 }
             }
         });
+
+        //To display the objects referenced in the public function selected by the publicFuncName JCombobox
         publicFuncName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                objName1.removeAllItems();
+                objNameTestGen.removeAllItems();
                 if (Backend.ActionFlag2 == 0) {
                     Backend.ActionFlag2 = 1;
                 } else {
@@ -232,7 +257,7 @@ public class UI extends JFrame {
                     for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
                         if (entry.getKey() == compare) {
                             for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
-                                objName1.addItem(entry2.getKey());
+                                objNameTestGen.addItem(entry2.getKey());
                             }
                             break;
                         }
@@ -240,21 +265,23 @@ public class UI extends JFrame {
                 }
             }
         });
-        objName1.addActionListener(new ActionListener() {
+
+        //To display the functions referenced in the object selected by the objNameTestGen JCombobox
+        objNameTestGen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                funcName1.removeAllItems();
+                funcNameTestGen.removeAllItems();
                 if (Backend.ActionFlag3 == 0) {
                     Backend.ActionFlag3 = 1;
                 } else {
                     String compare1 = (String) publicFuncName.getSelectedItem();
-                    String compare2 = (String) objName1.getSelectedItem();
+                    String compare2 = (String) objNameTestGen.getSelectedItem();
                     for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
                         if (entry.getKey() == compare1) {
                             for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
                                 if (entry2.getKey() == compare2) {
                                     for (int i = 0; i < entry2.getValue().size(); i++) {
-                                        funcName1.addItem(entry2.getValue().get(i));
+                                        funcNameTestGen.addItem(entry2.getValue().get(i));
                                     }
                                     break;
                                 }
@@ -266,38 +293,7 @@ public class UI extends JFrame {
             }
         });
 
-        /*button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UIManager.put("OptionPane.minimumSize", new Dimension(300, 300));
-
-                DefaultMutableTreeNode root = new DefaultMutableTreeNode(Backend.nameOfClassBeingTested);
-
-                for (Map.Entry<String, HashMap<String, List<String>>> entry : Backend.functionData.entrySet()) {
-                    DefaultMutableTreeNode row = new DefaultMutableTreeNode(entry.getKey());
-                    for (Map.Entry<String, List<String>> entry2 : entry.getValue().entrySet()) {
-                        for (int i = 0; i < entry2.getValue().size(); i++) {
-                            DefaultMutableTreeNode node = new DefaultMutableTreeNode(entry2.getValue().get(i));
-                            row.add(node);
-                        }
-                    }
-                    root.add(row);
-                }
-                DefaultTreeModel model = new DefaultTreeModel(root);
-                JTree codePreview = new JTree(model);
-
-                Enumeration e1 = root.breadthFirstEnumeration();
-                while (e1.hasMoreElements()) {
-                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e1.nextElement();
-                    if (node.isLeaf()) break;
-                    int row = codePreview.getRowForPath(new TreePath(node.getPath()));
-                    codePreview.expandRow(row);
-                }
-
-                JOptionPane.showMessageDialog(mainPanel, "Code Preview\n");
-                JOptionPane.showMessageDialog(mainPanel, codePreview);
-            }
-        });*/
+        //Loads the code preview when the code preview icon is pressed
         codepreview.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -333,7 +329,7 @@ public class UI extends JFrame {
     }
 
     public void setObjName(String ObjectName){
-        objName.addItem(ObjectName);
+        objNameSetup.addItem(ObjectName);
     }
 
     public void showMessage(String message){
