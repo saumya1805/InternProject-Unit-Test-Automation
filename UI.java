@@ -144,7 +144,6 @@ public class UI extends JFrame {
             }
         });
 
-
         //Adds Test function code to the customization text area
         addToTextAreaButtonTestGen.addActionListener(new ActionListener() {
             @Override
