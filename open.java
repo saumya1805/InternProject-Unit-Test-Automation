@@ -4,7 +4,6 @@ import java.awt.*;
 import java.io.IOException;
 
 public class open {
-
     //Form object is an instance of the UI created
     public static UI form;
     public static void main(String[] args) throws IOException, FontFormatException {
