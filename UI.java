@@ -134,7 +134,7 @@ public class UI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (Backend.addFlag == 0) {
                     customizationSpace.setText("@Before\n");
-                    customizationSpace.append("public void beforeTest(){\n\n");
+                    customizationSpace.append("public void setup(){\n\n");
                     customizationSpace.append("MockitoAnnotations.initMocks(this);\n");
                     Backend.addFlag = 1;
                 }
